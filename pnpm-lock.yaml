@@ -1,0 +1,16 @@
+lockfileVersion: 5.4
+
+overrides:
+  react: 17.0.2
+
+specifiers:
+  solid-js: ^1.4.8
+
+dependencies:
+  solid-js: 1.4.8
+
+packages:
+
+  /solid-js/1.4.8:
+    resolution: {integrity: sha512-XErZdnnYYXF7OwGSUAPcua2y5/ELB/c53zFCpWiEGqxTNoH1iQghzI8EsHJXk06sNn+Z/TGhb8bPDNNGSgimag==}
+    dev: false
