@@ -1,4 +1,4 @@
-<h1 style="font-size:60px">🏂🏽 solid-router-stack</h1>
+<div style="font-size:60px">🏂🏽 solid-router-stack</div>
 
 A solid router, mobile first.
 
