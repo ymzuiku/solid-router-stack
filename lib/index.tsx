@@ -1,4 +1,4 @@
-import { createRoot, createSignal, For, lazy } from "solid-js";
+import { createRoot, createSignal, For, lazy, Suspense } from "solid-js";
 import { createStore } from "solid-js/store";
 import { historyProxy, Stack } from "./historyProxy";
 import { isIOSWechat } from "./isIOSWechat";
@@ -210,6 +210,7 @@ export const createRouters = <T extends Record<string, Router>>(
           {(item, i) => {
             const router = routerMaps[item.path] || stackOptions.notFound;
             preload(router);
+            console.log("__debug__", stack.list);
 
             return (
               <div
@@ -227,7 +228,16 @@ export const createRouters = <T extends Record<string, Router>>(
                   background: "#fff",
                 }}
               >
-                <router.Component stackTop={item.stackTop} {...item.params} />
+                {router.async ? (
+                  <router.Component stackTop={item.stackTop} {...item.params} />
+                ) : (
+                  <Suspense fallback={stackOptions.fallback}>
+                    <router.Component
+                      stackTop={item.stackTop}
+                      {...item.params}
+                    />
+                  </Suspense>
+                )}
               </div>
             );
           }}

@@ -1,14 +1,10 @@
 import { tw } from "twind";
-import {
-  createRouters,
-  moveLeftCss,
-  useAnimationNavigation,
-} from "../../../lib";
+import { createRouters, useAnimationNavigation } from "../../../lib";
 import Welcome from "./Welcome";
 
-useAnimationNavigation(moveLeftCss);
+useAnimationNavigation("moveTop");
 
-document.body.className = tw`bg-gray-700`;
+document.body.className = tw`bg-gray-800`;
 
 export const routers = createRouters({
   Welcome: {

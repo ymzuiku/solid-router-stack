@@ -1,8 +1,9 @@
+import { moveLeftCss, moveTopCss } from "./baseCss";
 import { stackOptions } from "./stackOptions";
 
-export const useAnimationNavigation = (
+export const customAnimationNavigation = (
   animeCss: string,
-  navigationDuration = 200
+  navigationDuration = 250
 ) => {
   Object.assign(stackOptions, {
     navigationDuration,
@@ -16,4 +17,8 @@ export const useAnimationNavigation = (
       document.head.append(sty);
     }
   }
+};
+
+export const useAnimationNavigation = (type: "moveTop" | "moveLeft") => {
+  customAnimationNavigation(type == "moveTop" ? moveTopCss : moveLeftCss);
 };

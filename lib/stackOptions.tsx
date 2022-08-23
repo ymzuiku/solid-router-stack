@@ -6,4 +6,5 @@ export const stackOptions = {
     async: true,
     render: () => <div>Not found page</div>,
   } as RouterItem,
+  fallback: <div></div>,
 };

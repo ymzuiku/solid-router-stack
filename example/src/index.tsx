@@ -1,8 +1,6 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 
-import "twind/shim";
-
 import "./index.css";
 import { routers } from "./routers/routers";
 
