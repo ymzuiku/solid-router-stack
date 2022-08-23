@@ -11,22 +11,15 @@ import type {
   RoutersComonent,
 } from "./types";
 import { useAnimationNavigation } from "./useAnimationNavigation";
-
+export * from "./baseCss";
 export { useAnimationNavigation };
 
-function fixUrl(url: string, state?: Record<string, unknown>) {
-  if (state) {
-    return (
-      stackOptions.prefix +
-      url +
-      "?" +
-      new URLSearchParams(state as any).toString()
-    );
-  }
-  return stackOptions.prefix + url;
-}
+const classNow = "solid-router-stack-now";
+const classBefore = "solid-router-stack-before";
+const classLeave = "solid-router-stack-leave";
+const classAfter = "solid-router-stack-after";
 
-export const createRouter = <T extends Record<string, Router>>(
+export const createRouters = <T extends Record<string, Router>>(
   p: T
 ): Record<keyof T, RouterNavigate> & Routers => {
   const routers = { ...p } as any as Record<string, RouterItem>;
@@ -61,13 +54,13 @@ export const createRouter = <T extends Record<string, Router>>(
           setStack("list", stack.list.length - 2, { stackTop: false } as any);
         }
         if (ignoreAnime) {
-          setNowStackClass(stackOptions.classNow);
-          setLastStackClass(stackOptions.classAfter);
+          setNowStackClass(classNow);
+          setLastStackClass(classAfter);
         } else {
-          setNowStackClass(stackOptions.classBefore);
+          setNowStackClass(classBefore);
           requestAnimationFrame(() => {
-            setNowStackClass(stackOptions.classNow);
-            setLastStackClass(stackOptions.classAfter);
+            setNowStackClass(classNow);
+            setLastStackClass(classAfter);
           });
         }
       } else if (lastLen !== nowLen) {
@@ -76,8 +69,8 @@ export const createRouter = <T extends Record<string, Router>>(
         if (stack.list.length > 2) {
           setStack("list", stack.list.length - 3, { stackTop: false } as any);
         }
-        setNowStackClass(stackOptions.classBefore);
-        setLastStackClass(stackOptions.classNow);
+        setNowStackClass(classLeave);
+        setLastStackClass(classNow);
         if (ignoreAnime) {
           setStack("list", [...historyProxy.stack]);
         } else {
@@ -87,13 +80,13 @@ export const createRouter = <T extends Record<string, Router>>(
         }
       } else {
         // pop, 且是最后一个
-        setNowStackClass(stackOptions.classNow);
-        setLastStackClass(stackOptions.classAfter);
         setStack("list", [...historyProxy.stack]);
         setStack("list", stack.list.length - 1, { stackTop: true } as any);
         if (stack.list.length > 1) {
           setStack("list", stack.list.length - 2, { stackTop: false } as any);
         }
+        setNowStackClass(classNow);
+        setLastStackClass(classAfter);
       }
     } else {
       setStack("list", [...historyProxy.stack]);
@@ -101,15 +94,15 @@ export const createRouter = <T extends Record<string, Router>>(
       if (stack.list.length > 1) {
         setStack("list", stack.list.length - 2, { stackTop: false } as any);
       }
+      setNowStackClass(classNow);
+      setLastStackClass(classAfter);
     }
 
     lastLen = nowLen;
-    if (last.tempData) {
-      setStack("list", historyProxy.stack.length - 1, {
-        params: { ...last.params },
-        tempData: { ...last.tempData },
-      } as any);
-    }
+
+    setStack("list", historyProxy.stack.length - 1, {
+      params: last ? historyProxy.searchUrlToObject(last.url) : {},
+    } as any);
     if (ignoreAnime) {
       requestAnimationFrame(() => {
         ignoreAnime = false;
@@ -133,16 +126,16 @@ export const createRouter = <T extends Record<string, Router>>(
     }
     item.push = (state) => {
       if (isIOSWechat()) {
-        historyProxy.pushNotHistory(fixUrl(item.path, state));
+        historyProxy.pushNotHistory(historyProxy.parasmUrl(item.path, state));
       } else {
-        historyProxy.push(fixUrl(item.path, state));
+        historyProxy.push(historyProxy.parasmUrl(item.path, state));
       }
     };
     item.replace = (state) => {
-      historyProxy.replace(fixUrl(item.path, state));
+      historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
     item.clearTo = (state) => {
-      historyProxy.clearTo(fixUrl(item.path, state));
+      historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
     };
   };
   setItem(stackOptions.notFound);
@@ -156,7 +149,7 @@ export const createRouter = <T extends Record<string, Router>>(
   Object.keys(routers).map((k) => {
     const router = routers[k];
     if (router) {
-      routerMaps[stackOptions.prefix + router.path] = router;
+      routerMaps[router.path] = router;
       if (!router.async) {
         needPreloadAll.push(router);
       }
@@ -181,18 +174,19 @@ export const createRouter = <T extends Record<string, Router>>(
     }
   }
 
-  const RoutersComonent: RoutersComonent = ({ root }) => {
+  const RoutersComonent: RoutersComonent = ({ root, hash, ignoreFull }) => {
+    historyProxy.useHash = !!hash;
     const nowUrl = historyProxy.nowUrl();
-    const nowParams = historyProxy.searchUrlToObject(
-      stackOptions.prefix + historyProxy.nowFullUrl()
-    );
+    const nowParams = historyProxy.searchUrlToObject(historyProxy.nowFullUrl());
     ignoreAnime = true;
-    root.push();
+
     if (nowUrl !== "/" && nowUrl !== root.path) {
-      const nowRouter =
-        routerMaps[stackOptions.prefix + nowUrl] || stackOptions.notFound;
+      root.push();
+      const nowRouter = routerMaps[nowUrl] || stackOptions.notFound;
       ignoreAnime = true;
-      nowRouter.push({ ...nowParams, stackAnime: "noPush" });
+      nowRouter.push({ ...nowParams });
+    } else {
+      root.push(nowParams);
     }
 
     const [getW, setW] = createSignal(
@@ -201,13 +195,15 @@ export const createRouter = <T extends Record<string, Router>>(
     const [getH, setH] = createSignal(
       typeof window !== "undefined" ? window.innerHeight : 0
     );
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", () => {
-        setW(window.innerWidth);
-        setH(window.innerHeight);
-      });
-    }
 
+    if (!ignoreFull) {
+      if (typeof window !== "undefined") {
+        window.addEventListener("resize", () => {
+          setW(window.innerWidth);
+          setH(window.innerHeight);
+        });
+      }
+    }
     return (
       <>
         <For each={stack.list}>
@@ -226,16 +222,12 @@ export const createRouter = <T extends Record<string, Router>>(
                   "z-index": i() * 10,
                   top: "0px",
                   left: "0px",
-                  width: getW() + "px",
-                  height: getH() + "px",
+                  width: ignoreFull ? void 0 : getW() + "px",
+                  height: ignoreFull ? void 0 : getH() + "px",
                   background: "#fff",
                 }}
               >
-                <router.Component
-                  stackTop={item.stackTop}
-                  {...item.params}
-                  {...item.tempData}
-                />
+                <router.Component stackTop={item.stackTop} {...item.params} />
               </div>
             );
           }}

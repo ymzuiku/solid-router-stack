@@ -11,7 +11,7 @@ export interface RouterNavigate {
 
 export interface Router {
   path: string;
-  render: () => any;
+  render: any;
   async?: boolean;
   preload?: () => RouterNavigate[];
   preloadAll?: boolean;
@@ -25,7 +25,11 @@ export interface RouterItem extends Router, RouterNavigate {
   clearTo: (state?: Record<string, unknown>) => void;
 }
 
-export type RoutersComonent = ({ root }: { root: any }) => any;
+export type RoutersComonent = (props: {
+  root: any;
+  hash?: boolean;
+  ignoreFull?: boolean;
+}) => any;
 
 export interface Routers {
   search: typeof historyProxy.search;

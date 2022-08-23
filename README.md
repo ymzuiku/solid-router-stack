@@ -1,6 +1,8 @@
-<div style="font-size:60px">🏂🏽 solid-router-stack</div>
+# 🏂🏽 solid-router-stack
 
 A solid router, mobile first.
+
+[View DEMO](https://solid-router-stack.gewulian.com)
 
 features:
 

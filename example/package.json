@@ -15,7 +15,8 @@
     "vite-plugin-solid": "^2.3.0"
   },
   "dependencies": {
+    "solid-js": "^1.4.7",
     "solid-router-stack": "link:../solid-router-stack",
-    "solid-js": "^1.4.7"
+    "twind": "^0.16.17"
   }
 }

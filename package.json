@@ -1,6 +1,6 @@
 {
   "name": "solid-router-stack",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "types": "lib/index.tsx",
   "private": false,
   "exports": {

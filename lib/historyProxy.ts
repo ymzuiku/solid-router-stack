@@ -8,9 +8,6 @@ export interface Stack {
   time: number;
   index: number;
   params: Record<string, string>;
-  // tempData 是一种临时数据，当页面返回时可以带会，如果发起push，replace，都会清理历史 tempData
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tempData?: Record<string, any>;
 }
 type Event = (path: string, typed: State, stack: Stack[]) => void;
 
@@ -53,9 +50,7 @@ const push = (url: string) => {
   beforeChangeEvent.forEach((e) => {
     url = e(url);
   });
-  historyProxy.stack.forEach((s) => {
-    s.tempData = void 0;
-  });
+  // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
   if (historyProxy.useHash) {
     url = "/#" + url;
@@ -68,9 +63,7 @@ const pushNotHistory = (url: string) => {
   beforeChangeEvent.forEach((e) => {
     url = e(url);
   });
-  historyProxy.stack.forEach((s) => {
-    s.tempData = void 0;
-  });
+  // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
   if (historyProxy.useHash) {
     url = "/#" + url;
@@ -79,12 +72,9 @@ const pushNotHistory = (url: string) => {
   window.dispatchEvent(new Event("replaceState"));
 };
 
-const replace = (url: string, data?: Record<string, unknown>) => {
+const replace = (url: string) => {
   beforeChangeEvent.forEach((e) => {
     url = e(url);
-  });
-  historyProxy.stack.forEach((s) => {
-    s.tempData = void 0;
   });
   if (historyProxy.stack.length > 0) {
     historyProxy.stack.pop();
@@ -93,10 +83,7 @@ const replace = (url: string, data?: Record<string, unknown>) => {
   if (historyProxy.useHash) {
     url = "/#" + url;
   }
-  if (data) {
-    const last = historyProxy.stack[historyProxy.stack.length - 1];
-    last.tempData = data;
-  }
+
   history.replaceState(null, "", url);
   window.dispatchEvent(new Event("replaceState"));
 };
@@ -117,13 +104,15 @@ const baseGoBack = (data?: Record<string, unknown>) => {
     historyProxy.stack[historyProxy.stack.length - 1] = stack;
   }
 
-  let url = stack.url;
+  let url = stack.path;
   if (historyProxy.useHash) {
-    url = "/#" + stack.url;
+    url = "/#" + stack.path;
   }
-  if (data) {
-    historyProxy.stack[historyProxy.stack.length - 1].tempData = data;
-  }
+  url = parasmUrl(url, {
+    ...searchUrlToObject(stack.url),
+    ...data,
+  });
+  stack.url;
   return url;
 };
 
@@ -174,14 +163,39 @@ function nowFullUrl() {
   return list[1];
 }
 
-function searchUrlToObject(url: string): Record<string, string> {
+function parasmUrl(url: string, state?: Record<string, unknown>) {
+  if (state) {
+    const realState: Record<string, unknown> = {};
+    Object.keys(state).forEach((k) => {
+      const v = state[k];
+      if (v !== void 0 && v !== "") {
+        realState[k] = v;
+      }
+    });
+    const p = new URLSearchParams(realState as any).toString();
+    if (p) {
+      return url + "?" + p;
+    }
+    return url;
+  }
+  return url;
+}
+
+function searchUrlToObject(url: string): Record<string, string> | undefined {
   const [url1, url2] = url.split("#");
   const obj = new URLSearchParams(
-    [url1.split("?")[1], url2.split("?")[1]].join("&")
+    [url1.split("?")[1], url2 ? url2.split("?")[1] : ""].join("&")
   );
   const out: Record<string, string> = {};
+  let hasProps = false;
   for (const [k, v] of obj.entries()) {
-    out[k] = v;
+    hasProps = true;
+    if (v !== void 0 && v !== "") {
+      out[k] = v;
+    }
+  }
+  if (!hasProps) {
+    return void 0;
   }
   return out;
 }
@@ -199,6 +213,7 @@ export const historyProxy = {
   listen,
   beforeChange,
   searchUrlToObject,
+  parasmUrl,
   /** 当路径返回路径为最后一个时，可以修改返回路径 */
   onLastBack: (stack: Stack): string => {
     return stack.url;
