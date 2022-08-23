@@ -7,6 +7,7 @@ export interface Stack {
   path: string;
   time: number;
   index: number;
+  params: Record<string, string>;
   // tempData 是一种临时数据，当页面返回时可以带会，如果发起push，replace，都会清理历史 tempData
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tempData?: Record<string, any>;
@@ -42,6 +43,7 @@ const newStack = (url: string): Stack => {
   return {
     url,
     path: url.split("?")[0],
+    params: searchUrlToObject(url) || {},
     time: Date.now(),
     index: historyProxy.stack.length,
   };
@@ -142,7 +144,52 @@ const clearTo = (url: string) => {
   replace(url);
 };
 
+function search() {
+  const [url1, url2] = location.href.split("#");
+  return new URLSearchParams(
+    [url1.split("?")[1], url2.split("?")[1]].join("&")
+  );
+}
+
+function nowUrl() {
+  if (!location.hash) {
+    return "/";
+  }
+  const list = location.hash.split("#");
+  if (list.length < 2) {
+    return "/";
+  }
+
+  return list[1].split("?")[0];
+}
+function nowFullUrl() {
+  if (!location.hash) {
+    return "/";
+  }
+  const list = location.hash.split("#");
+  if (list.length < 2) {
+    return "/";
+  }
+
+  return list[1];
+}
+
+function searchUrlToObject(url: string): Record<string, string> {
+  const [url1, url2] = url.split("#");
+  const obj = new URLSearchParams(
+    [url1.split("?")[1], url2.split("?")[1]].join("&")
+  );
+  const out: Record<string, string> = {};
+  for (const [k, v] of obj.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
 export const historyProxy = {
+  search,
+  nowUrl,
+  nowFullUrl,
   push,
   pushNotHistory,
   replace,
@@ -151,6 +198,7 @@ export const historyProxy = {
   clearTo,
   listen,
   beforeChange,
+  searchUrlToObject,
   /** 当路径返回路径为最后一个时，可以修改返回路径 */
   onLastBack: (stack: Stack): string => {
     return stack.url;

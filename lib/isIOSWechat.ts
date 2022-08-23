@@ -5,6 +5,8 @@ export function isIOSWechat(): boolean {
     return isIOSWechatApp;
   }
   const ua = navigator.userAgent.toLocaleLowerCase();
-  isIOSWechatApp = new RegExp("(iphone|ipod|ipad)").test(ua) && new RegExp("(micromessenger)").test(ua);
+  isIOSWechatApp =
+    new RegExp("(iphone|ipod|ipad)").test(ua) &&
+    new RegExp("(micromessenger)").test(ua);
   return isIOSWechatApp;
 }

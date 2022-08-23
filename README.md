@@ -12,40 +12,42 @@ features:
 
 ```tsx
 import { createRouter } from "solid-router-stack";
+import Welcome from "./welcome";
 
 export const routers = createRouter({
   welcome: {
-    render: () => import("./welcome"),
-    // leave this page, auto remove in dom
-    notKeep: true,
+    render: Welcome,
+    // not use lazy import
+    async: true,
   },
   user: {
-    render: () => import("./welcome"),
+    render: () => import("./user"),
   },
   login: {
     render: () => import("./sign/Login"),
+    // preload other pages
     preload: () => [paths.welcome, paths.login],
   },
 });
 ```
 
-Use history:
+## Use Navigaion
 
 ```tsx
 import { routers } from "./routers";
 
 function App() {
   const handlePushProduct = () => {
-    routers.push.welcome();
+    routers.welcome.push();
   };
   const handleReleaseProduct = () => {
-    routers.replace.welcome({ id: "123" });
+    routers.welcome.replace({ id: "123" });
   };
   const handleClearToProduct = () => {
-    routers.clearTo.welcome();
+    routers.welcome.clearTo();
   };
   const handleGoBack = () => {
-    gewuRoute.back();
+    routers.goBack();
   };
   return (
     <div>
@@ -59,27 +61,58 @@ function App() {
 }
 ```
 
-### useHistoryChange
+## Use params
 
 When sub page back, you can do something:
 
 ```tsx
-function App() {
-  const his = useHistoryChange();
-  if (his.isBack) {
-    console.log("I need fetch new data.");
-  }
+const handlePush = () => {
+  routers.somePage.push({dog:"im push"});
+};
+
+const handleGoBack = () => {
+  routers.goBack({dog:"im go back"});
+};
+
+// params in props
+function App(p: {dog}) {
   return (
     <div>
-      {his.isBack}
-      {his.last}
-      {his.stack}
+      {p.dog}
     </div>
   );
 }
 ```
 
-### Events listen
+## Not keep page
+
+`props.stackTop` is when stack page is stack top, you can use `<Show when={props.stackTop} />` change Not keep page:
+
+```tsx
+const Page: Component = (props) => {
+  return (
+    <Show when={props.stackTop}>
+      <div onclick={() => routers.goBack({ fish: new Date().toISOString() })}>go back</div>
+      <div>fish page aaaaaaaaaa</div>
+      <div onclick={() => routers.hello_dog.replace()}>replace to dog</div>
+    </Show>
+  );
+};
+```
+
+## Animation navigation, like application
+
+```tsx
+import { useAnimationNavigation } from "solid-router-stack";
+
+// like iOS application
+useAnimationNavigation("moveLeft");
+
+// like Android application
+useAnimationNavigation("moveUp");
+```
+
+## Events listen
 
 When use history change:
 

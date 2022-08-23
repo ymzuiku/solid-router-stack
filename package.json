@@ -1,22 +1,14 @@
 {
   "name": "solid-router-stack",
-  "version": "0.0.1",
-  "types": "lib/index.ts",
+  "version": "0.0.2",
+  "types": "lib/index.tsx",
   "private": false,
   "exports": {
     "import": "./esm/index.js",
     "require": "./cjs/index.js"
   },
-  "resolutions": {
-    "react": "17.0.2"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
   "scripts": {
-    "esm": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=esm --target=es6  --bundle --external:solid --format=esm --minify --splitting",
-    "cjs": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=cjs --target=es6  --bundle --external:solid --format=cjs --minify",
-    "build": "npm run cjs && npm run esm"
+    "build": "node build.js"
   },
   "repository": {
     "type": "git",
@@ -28,5 +20,9 @@
   "homepage": "git+https://github.com/ymzuiku/gewu-packages.git",
   "dependencies": {
     "solid-js": "^1.4.8"
+  },
+  "devDependencies": {
+    "esbuild": "^0.15.5",
+    "esbuild-plugin-solid": "^0.4.2"
   }
 }
