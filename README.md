@@ -1,6 +1,6 @@
-# solid-router-stack
+# 🏂🏽 solid-router-stack
 
-A react router, mobile first.
+A solid router, mobile first.
 
 features:
 
