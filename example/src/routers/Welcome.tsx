@@ -38,10 +38,10 @@ const Welcome: Component = (p: { name?: string }) => {
             setNavigationAnimation(e.currentTarget.value as any);
           }}
         >
-          <option value="moveTop">Move Top</option>
-          <option value="moveLeft">Move Left</option>
-          <option value="scale">Scale</option>
-          <option value="none">None</option>
+          <option value="moveTop">Animation: Move Top</option>
+          <option value="moveLeft">Animation: Move Left</option>
+          <option value="scale">Animation: Scale</option>
+          <option value="none">Animation: None</option>
         </select>
         <p class={tw`mt-10`}>Input name, and jump next page.</p>
         <input
