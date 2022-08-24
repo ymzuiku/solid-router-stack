@@ -1,6 +1,6 @@
 {
   "name": "solid-router-stack",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "types": "lib/index.tsx",
   "private": false,
   "exports": {
@@ -12,12 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ymzuiku/gewu-packages.git"
+    "url": "git+https://github.com/ymzuiku/solid-router-stack.git"
   },
   "bugs": {
-    "url": "git+https://github.com/ymzuiku/gewu-packages.git"
+    "url": "git+https://github.com/ymzuiku/solid-router-stack.git"
   },
-  "homepage": "git+https://github.com/ymzuiku/gewu-packages.git",
+  "homepage": "git+https://github.com/ymzuiku/solid-router-stack.git",
   "dependencies": {
     "solid-js": "^1.4.8"
   },
