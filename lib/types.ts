@@ -29,6 +29,7 @@ export type RoutersComonent = (props: {
   root: any;
   hash?: boolean;
   ignoreFull?: boolean;
+  virtualHistory?: boolean;
 }) => any;
 
 export interface Routers {

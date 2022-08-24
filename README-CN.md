@@ -95,19 +95,15 @@ export default Welcome;
 
 
 ```tsx
-const handlePush = () => {
-  routers.somePage.push({dog:"im push"});
-};
-
-const handleGoBack = () => {
-  routers.goBack({dog:"im go back"});
-};
-
 // params in props
-function App(p: {dog}) {
+import { createPropsSignal } from "solid-router-stack";
+
+// params.dog in props
+function App(props) {
+  const [dog, setDog] = createPropsSignal(props, "dog")
   return (
     <div>
-      {p.dog}
+      {dog()}
     </div>
   );
 }
@@ -152,4 +148,18 @@ routers.listen(({ fromUrl, toUrl, kind, index }) => {
 });
 ```
 
+## 使用虚拟 history
 
+下面的例子, 使用虚拟 history 在 iOS Wechat 应用中, 这样导航路由 history 不会增加, iOS 微信页面底部就不会有导航按钮.
+
+```tsx
+export function isIOSWechat(): boolean {
+  const ua = navigator.userAgent.toLocaleLowerCase();
+  return  new RegExp("(iphone|ipod|ipad)").test(ua) && new RegExp("(micromessenger)").test(ua);
+}
+
+render(
+  () => <routers.Routers root={routers.Welcome} hash virtualHistory={isIOSWechat()} />,
+  document.getElementById("root");
+);
+```

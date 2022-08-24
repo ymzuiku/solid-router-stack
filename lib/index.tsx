@@ -1,14 +1,14 @@
 import {
+  Accessor,
   createRoot,
   createSignal,
   For,
   lazy,
+  Setter,
   Suspense,
-  SuspenseList,
 } from "solid-js";
-import { createStore } from "solid-js/store";
-import { historyProxy, Stack } from "./historyProxy";
-import { isIOSWechat } from "./isIOSWechat";
+
+import { historyProxy } from "./historyProxy";
 import { stackOptions } from "./stackOptions";
 import type {
   Router,
@@ -18,6 +18,7 @@ import type {
   RoutersComonent,
 } from "./types";
 export * from "./baseCss";
+export * from "./createPropsSignal";
 export * from "./setNavigationAnimation";
 
 const classNow = "solid-router-stack-now";
@@ -30,90 +31,130 @@ export const createRouters = <T extends Record<string, Router>>(
 ): Record<keyof T, RouterNavigate> & Routers => {
   const routers = { ...p } as any as Record<string, RouterItem>;
   const [stack, setStack] = createRoot(() =>
-    createStore<{
-      list: (Stack & { className?: string; stackTop?: boolean })[];
-    }>({
-      list: historyProxy.stack,
-    })
+    createSignal<
+      {
+        url: Accessor<string>;
+        setUrl: Setter<string>;
+        path: Accessor<string>;
+        setPath: Setter<string>;
+        css: Accessor<string>;
+        setCss: Setter<string>;
+        top: Accessor<boolean>;
+        setTop: Setter<boolean>;
+        params: Accessor<Record<string, string>>;
+        setParams: Setter<Record<string, string>>;
+      }[]
+    >([])
   );
 
-  const setNowStackClass = (className: string) => {
-    setStack("list", stack.list.length - 1, { className } as any);
-  };
-  const setLastStackClass = (className: string) => {
-    if (stack.list.length > 1) {
-      setStack("list", stack.list.length - 2, { className } as any);
+  const pushStask = () => {
+    const list = stack();
+    const item = list[list.length - 1];
+    if (item) {
+      item.setTop(false);
     }
+
+    const s = historyProxy.stack[historyProxy.stack.length - 1];
+    const [url, setUrl] = createSignal(s.url);
+    const [path, setPath] = createSignal(s.path);
+    const [css, setCss] = createSignal("");
+    const [top, setTop] = createSignal(true);
+    const [params, setParams] = createSignal<Record<string, string>>(s.params);
+    setStack([
+      ...stack(),
+      {
+        url,
+        setUrl,
+        path,
+        setPath,
+        css,
+        setCss,
+        top,
+        setTop,
+        params,
+        setParams,
+      },
+    ]);
+  };
+  const popStask = () => {
+    const s = historyProxy.stack[historyProxy.stack.length - 1];
+    const list = stack();
+    if (list.length > 1) {
+      const item = list[list.length - 2];
+      item.setTop(true);
+      item.setUrl(s.url);
+      item.setPath(s.path);
+      item.setParams(s.params);
+      setStack([...list]);
+    }
+    setTimeout(() => {
+      list.pop();
+      setStack([...list]);
+    }, stackOptions.navigationDuration);
+  };
+  const replaceStask = () => {
+    const s = historyProxy.stack[historyProxy.stack.length - 1];
+    const list = stack();
+    const item = list[list.length - 1];
+    item.setUrl(s.url);
+    item.setParams(s.params);
+    setStack([...list]);
   };
 
-  const setStackTop = () => {
-    const lastReal = historyProxy.stack[historyProxy.stack.length - 1];
-    const nextParams = lastReal
-      ? { ...historyProxy.searchUrlToObject(lastReal.url) }
-      : {};
-    setStack("list", stack.list.length - 1, "params", nextParams);
+  const setNowStackClass = (className: string) => {
+    if (stackOptions.navigationDuration == 0) {
+      return;
+    }
+    const list = stack();
+    const item = list[list.length - 1];
+    if (item) {
+      item.setCss(className);
+    }
+  };
+  const setLastStackClass = (className: string) => {
+    if (stackOptions.navigationDuration == 0) {
+      return;
+    }
+    const list = stack();
+    const item = list[list.length - 2];
+    if (item) {
+      item.setCss(className);
+    }
   };
 
   let lastLen = 0;
   let ignoreAnime = false;
   historyProxy.listen(() => {
     const nowLen = historyProxy.stack.length;
-    if (stackOptions.navigationDuration > 0) {
-      if (nowLen > lastLen) {
-        // push
-        setStack("list", [...historyProxy.stack]);
-        setStack("list", stack.list.length - 1, { stackTop: true } as any);
-        if (stack.list.length > 1) {
-          setStack("list", stack.list.length - 2, { stackTop: false } as any);
-        }
-        if (ignoreAnime) {
-          setNowStackClass(classNow);
-          setLastStackClass(classAfter);
-        } else {
-          setNowStackClass(classBefore);
-          requestAnimationFrame(() => {
-            setLastStackClass(classAfter);
-            setNowStackClass(classNow);
-            setStackTop();
-          });
-        }
-      } else if (lastLen !== nowLen && nowLen >= 1) {
-        // pop, 并且不是最后一个
-        setStack("list", stack.list.length - 2, { stackTop: true } as any);
-        if (stack.list.length > 2) {
-          setStack("list", stack.list.length - 3, { stackTop: false } as any);
-        }
-        setNowStackClass(classLeave);
-        setLastStackClass(classNow);
-        if (ignoreAnime) {
-          setStack("list", [...historyProxy.stack]);
-          setStack("list", stack.list.length - 1, { stackTop: true } as any);
-        } else {
-          setTimeout(() => {
-            setStack("list", [...historyProxy.stack]);
-            setStack("list", stack.list.length - 1, { stackTop: true } as any);
-            setNowStackClass(classNow);
-            setStackTop();
-          }, stackOptions.navigationDuration);
-        }
-      } else {
-        // pop, 且是最后一个
-        setStack("list", [...historyProxy.stack]);
-        setStack("list", stack.list.length - 1, { stackTop: true } as any);
-        if (stack.list.length > 1) {
-          setStack("list", stack.list.length - 2, { stackTop: false } as any);
-        }
+    if (nowLen > lastLen) {
+      // push
+      pushStask();
+      if (ignoreAnime) {
         setNowStackClass(classNow);
-        setStackTop();
+        setLastStackClass(classAfter);
+      } else {
+        setNowStackClass(classBefore);
+        requestAnimationFrame(() => {
+          setLastStackClass(classAfter);
+          setNowStackClass(classNow);
+        });
+      }
+    } else if (lastLen !== nowLen && nowLen >= 1) {
+      // pop, 并且不是最后一个
+      setNowStackClass(classLeave);
+      setLastStackClass(classNow);
+      popStask();
+      if (ignoreAnime) {
+        setNowStackClass(classNow);
+      } else {
+        setTimeout(() => {
+          setNowStackClass(classNow);
+        }, stackOptions.navigationDuration);
       }
     } else {
-      setStack("list", [...historyProxy.stack]);
-      setStack("list", stack.list.length - 1, { stackTop: true } as any);
-      if (stack.list.length > 1) {
-        setStack("list", stack.list.length - 2, { stackTop: false } as any);
-      }
+      // pop, 且是最后一个
+      replaceStask();
       setNowStackClass(classNow);
-      setStackTop();
     }
 
     lastLen = nowLen;
@@ -125,8 +166,9 @@ export const createRouters = <T extends Record<string, Router>>(
     }
   });
 
+  let isVirtualHistory = false;
   const goBack = (state?: Record<string, unknown>) => {
-    if (isIOSWechat()) {
+    if (isVirtualHistory) {
       historyProxy.gobackNotHistory(state);
     } else {
       historyProxy.goBack(state);
@@ -140,7 +182,7 @@ export const createRouters = <T extends Record<string, Router>>(
       (item as any).Component = lazy(item.render);
     }
     item.push = (state) => {
-      if (isIOSWechat()) {
+      if (isVirtualHistory) {
         historyProxy.pushNotHistory(historyProxy.parasmUrl(item.path, state));
       } else {
         historyProxy.push(historyProxy.parasmUrl(item.path, state));
@@ -190,8 +232,15 @@ export const createRouters = <T extends Record<string, Router>>(
     }
   }
 
-  const RoutersComonent: RoutersComonent = ({ root, hash, ignoreFull }) => {
+  const RoutersComonent: RoutersComonent = ({
+    root,
+    hash,
+    ignoreFull,
+    virtualHistory,
+  }) => {
     historyProxy.useHash = !!hash;
+    isVirtualHistory = !!virtualHistory;
+
     const nowUrl = historyProxy.nowUrl();
     const nowParams = historyProxy.searchUrlToObject(historyProxy.nowFullUrl());
     ignoreAnime = true;
@@ -221,42 +270,37 @@ export const createRouters = <T extends Record<string, Router>>(
       }
     }
     return (
-      <div style={{ background: "inherit" }}>
-        <SuspenseList revealOrder="forwards" tail="collapsed">
-          <For each={stack.list}>
-            {(item, i) => {
-              const router = routerMaps[item.path] || stackOptions.notFound;
-              preload(router);
-              const Component = router.Component;
-
-              return (
-                <div
-                  data-path={item.path}
-                  class={item.className}
-                  style={{
-                    "pointer-events": item.stackTop ? "auto" : "none",
-                    position: "fixed",
-                    "z-index": i() * 10,
-                    top: "0px",
-                    left: "0px",
-                    width: ignoreFull ? void 0 : getW() + "px",
-                    height: ignoreFull ? void 0 : getH() + "px",
-                    background: "inherit",
-                  }}
-                >
-                  {router.async ? (
-                    <Component stackTop={item.stackTop} {...item.params} />
-                  ) : (
-                    <Suspense fallback={stackOptions.fallback}>
-                      <Component stackTop={item.stackTop} {...item.params} />
-                    </Suspense>
-                  )}
-                </div>
-              );
-            }}
-          </For>
-        </SuspenseList>
-      </div>
+      <For each={stack()}>
+        {(item, i) => {
+          const router = routerMaps[item.path()] || stackOptions.notFound;
+          preload(router);
+          const Component = router.Component;
+          return (
+            <div
+              data-path={item.path}
+              class={item.css()}
+              style={{
+                "pointer-events": item.top() ? "auto" : "none",
+                position: "fixed",
+                "z-index": i() * 10,
+                top: "0px",
+                left: "0px",
+                width: ignoreFull ? void 0 : getW() + "px",
+                height: ignoreFull ? void 0 : getH() + "px",
+                background: "inherit",
+              }}
+            >
+              {router.async ? (
+                <Component stackTop={item.top()} {...item.params()} />
+              ) : (
+                <Suspense fallback={stackOptions.fallback}>
+                  <Component stackTop={item.top()} {...item.params()} />
+                </Suspense>
+              )}
+            </div>
+          );
+        }}
+      </For>
     );
   };
 

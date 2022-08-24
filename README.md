@@ -12,7 +12,7 @@ Features:
 - Auto lazy load pages
 - Easy preload some pages when entry a page
 - Auto use URL params input page's props
-- Virtual history in iOS Wechat application.
+- Tiny, only `3kb` in gzip
 
 # Example
 
@@ -84,24 +84,23 @@ export default Welcome;
 
 When sub page back, you can do something:
 
+
 ```tsx
-const handlePush = () => {
-  routers.somePage.push({dog:"im push"});
-};
+import { createPropsSignal } from "solid-router-stack";
 
-const handleGoBack = () => {
-  routers.goBack({dog:"im go back"});
-};
-
-// params in props
-function App(p: {dog}) {
+// params.dog in props
+function App(props:{dog:string, age: number}) {
+  const [dog, setDog] = createPropsSignal(props, "dog")
   return (
     <div>
-      {p.dog}
+      <input oninput={e=>setDog(e.currentTarget.value)} />
+      <div>change and load: {dog()}</div>
+      <div>only load: {p.age}</div>
     </div>
   );
 }
 ```
+
 
 ## Not keep page
 
@@ -137,4 +136,21 @@ routers.listen(({ fromUrl, toUrl, kind, index }) => {
   console.log(fromUrl, toUrl, kind, index); // /hello, /next, "push", 2
   return toUrl;
 });
+```
+
+
+## Use virtual history
+
+Use virtual history in iOS Wechat application, history stack only one.
+
+```tsx
+export function isIOSWechat(): boolean {
+  const ua = navigator.userAgent.toLocaleLowerCase();
+  return  new RegExp("(iphone|ipod|ipad)").test(ua) && new RegExp("(micromessenger)").test(ua);
+}
+
+render(
+  () => <routers.Routers root={routers.Welcome} hash virtualHistory={isIOSWechat()} />,
+  document.getElementById("root");
+);
 ```
