@@ -3,7 +3,7 @@ import { stackOptions } from "./stackOptions";
 
 export const customAnimationNavigation = (
   animeCss: string,
-  navigationDuration = 250
+  navigationDuration = 220
 ) => {
   Object.assign(stackOptions, {
     navigationDuration,

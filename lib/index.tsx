@@ -205,20 +205,19 @@ export const createRouters = <T extends Record<string, Router>>(
       }
     }
     return (
-      <>
+      <div>
         <For each={stack.list}>
           {(item, i) => {
             const router = routerMaps[item.path] || stackOptions.notFound;
             preload(router);
-            console.log("__debug__", stack.list);
+            const Component = router.Component;
 
             return (
               <div
                 data-path={item.path}
                 class={item.className}
                 style={{
-                  "pointer-events":
-                    i() < stack.list.length - 1 ? "none" : "auto",
+                  "pointer-events": item.stackTop ? "auto" : "none",
                   position: "fixed",
                   "z-index": i() * 10,
                   top: "0px",
@@ -229,20 +228,17 @@ export const createRouters = <T extends Record<string, Router>>(
                 }}
               >
                 {router.async ? (
-                  <router.Component stackTop={item.stackTop} {...item.params} />
+                  <Component stackTop={item.stackTop} {...item.params} />
                 ) : (
                   <Suspense fallback={stackOptions.fallback}>
-                    <router.Component
-                      stackTop={item.stackTop}
-                      {...item.params}
-                    />
+                    <Component stackTop={item.stackTop} {...item.params} />
                   </Suspense>
                 )}
               </div>
             );
           }}
         </For>
-      </>
+      </div>
     );
   };
 

@@ -2,6 +2,7 @@ import { Component, createEffect, createSignal } from "solid-js";
 import { tw } from "twind";
 
 import logo from "../logo.svg";
+import { buttonCss } from "./classlist";
 import { routers } from "./routers";
 
 const Welcome: Component = (p: { name?: string }) => {
@@ -28,7 +29,7 @@ const Welcome: Component = (p: { name?: string }) => {
       />
       <button
         onclick={() => routers.Login.push({ name: name() })}
-        class={tw`bg-red-500 p-2 mt-2 rounded-lg`}
+        class={buttonCss}
       >
         Next Page
       </button>

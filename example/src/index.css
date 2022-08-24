@@ -15,27 +15,6 @@ body {
   }
 }
 
-@keyframes opa-all {
-  0% {
-    opacity: 30%;
-  }
-  50% {
-    opacity: 90%;
-  }
-  100% {
-    opacity: 30%;
-  }
-}
-
-/* video */
-
-.video-16-9 {
-  height: 100%;
-  width: 177.77777778vh; /* 100 * 16 / 9 */
-  min-width: 100%;
-  min-height: 56.25vw; /* 100 * 9 / 16 */
-}
-
 /* self */
 html,
 body {
@@ -73,11 +52,15 @@ input[type="number"]::-webkit-outer-spin-button {
 
 div,
 button,
-input {
+input,
+div:focus,
+button:focus,
+input:focus {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  outline: none;
   -webkit-appearance: none;
+  outline: none;
+  border: none;
 }
 
 div,

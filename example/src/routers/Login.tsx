@@ -1,5 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import { tw } from "twind";
+import { buttonCss } from "./classlist";
 
 import { routers } from "./routers";
 
@@ -12,7 +13,7 @@ const Login: Component = (p: { name?: string }) => {
     <div class={tw`bg-gray-800 text-white h-full w-full`}>
       <button
         onclick={() => routers.goBack({ name: name() })}
-        class={tw`bg-red-500 p-2 top-6 absolute left-6 rounded-lg`}
+        classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
       >
         Go Back
       </button>
@@ -41,7 +42,7 @@ const Login: Component = (p: { name?: string }) => {
           onclick={() =>
             routers.Dashboard.push({ name: p.name, yourClass: yourClass() })
           }
-          class={tw`bg-red-500 p-2 mt-2 rounded-lg`}
+          class={buttonCss}
         >
           Login
         </button>
