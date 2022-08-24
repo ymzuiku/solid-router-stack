@@ -10,7 +10,7 @@ const Login: Component = (p: { name?: string }) => {
   const [name, setName] = createSignal(p.name || "");
   const [yourClass, setYourClass] = createSignal("");
   return (
-    <div class={tw`bg-gray-800 text-white h-full w-full`}>
+    <div class={tw`text-white h-full w-full`}>
       <button
         onclick={() => routers.goBack({ name: name() })}
         classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
@@ -18,7 +18,7 @@ const Login: Component = (p: { name?: string }) => {
         Go Back
       </button>
       <header
-        class={tw`bg-gray-800 text-white h-full w-full flex flex-col items-center justify-center`}
+        class={tw`text-white h-full w-full flex flex-col items-center justify-center`}
       >
         <h1>Login</h1>
         <div class={item}>

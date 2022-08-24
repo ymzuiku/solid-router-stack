@@ -17,12 +17,12 @@ const Welcome: Component = (p: { name?: string }) => {
   return (
     <div class={tw`h-full overflow-y-auto`}>
       <header
-        class={tw`bg-gray-800 text-white flex-1 w-full flex flex-col items-center justify-center py-10`}
+        class={tw`text-white flex-1 w-full flex flex-col items-center justify-center py-10`}
       >
         <h1>Change navigation animation type:</h1>
         <select
           value={getMove()}
-          class={tw`bg-red-500 p-2 rounded-md text-white`}
+          class={tw`bg-red-500 p-2 mt-4 rounded-md text-white`}
           onchange={(e) => {
             setMove(e.currentTarget.value);
             setNavigationAnimation(e.currentTarget.value as any);
@@ -47,7 +47,7 @@ const Welcome: Component = (p: { name?: string }) => {
           Next Page
         </button>
         <p class={tw`mt-10`}>Scroll view and go back page</p>
-        <For each={Array(4).fill(0)}>
+        <For each={Array(10).fill(0)}>
           {() => (
             <img
               src={logo}

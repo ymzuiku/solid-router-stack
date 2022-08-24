@@ -5,7 +5,7 @@ import { routers } from "./routers";
 
 const Dashboard: Component = (p: { name?: string; yourClass?: string }) => {
   return (
-    <div class={tw`bg-gray-800 text-white h-full w-full`}>
+    <div class={tw`text-white h-full w-full`}>
       <button
         onclick={() => routers.goBack()}
         classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
@@ -13,7 +13,7 @@ const Dashboard: Component = (p: { name?: string; yourClass?: string }) => {
         Go Back
       </button>
       <header
-        class={tw`bg-gray-800 text-white h-full w-full flex flex-col items-center justify-center`}
+        class={tw`text-white h-full w-full flex flex-col items-center justify-center`}
       >
         <p>Your input data:</p>
         <div
