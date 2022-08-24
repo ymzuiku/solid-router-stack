@@ -3,7 +3,7 @@ import { tw } from "twind";
 import { buttonCss } from "./classlist";
 import { routers } from "./routers";
 
-const Dashboard: Component = (p: { name?: string; yourClass?: string }) => {
+const Dashboard: Component<{ name: string; yourClass: string }> = (p) => {
   return (
     <div class={tw`text-white h-full w-full`}>
       <button

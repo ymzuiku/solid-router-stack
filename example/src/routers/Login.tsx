@@ -1,16 +1,17 @@
 import { Component, createSignal } from "solid-js";
 import { tw } from "twind";
+import { createPropsSignal } from "../../../lib";
 import { buttonCss } from "./classlist";
 
 import { routers } from "./routers";
 
 const item = tw`px-6 my-3 max-w-[400px] w-full`;
 
-const Login: Component = (p: { name?: string }) => {
-  const [name, setName] = createSignal(p.name || "");
+const Login: Component<{ name: string }> = (p) => {
+  const [name, setName] = createPropsSignal(p, "name", "");
   const [yourClass, setYourClass] = createSignal("");
   return (
-    <div class={tw`text-white h-full w-full`}>
+    <div class={tw`bg-gray-800 text-white h-full w-full`}>
       <button
         onclick={() => routers.goBack({ name: name() })}
         classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
