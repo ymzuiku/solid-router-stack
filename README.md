@@ -15,6 +15,7 @@ features:
 ## Example
 
 ```tsx
+import { render } from "solid-js/web";
 import { createRouter } from "solid-router-stack";
 import Welcome from "./welcome";
 
@@ -33,6 +34,15 @@ export const routers = createRouter({
     render: () => import("./user"),
   },
 });
+
+// page background inherit the parent background:
+document.getElementById("root").style.background = "#fff";
+
+render(
+  () => <routers.Routers root={routers.Welcome} hash />,
+  document.getElementById("root");
+);
+
 ```
 
 ## Use Navigaion
@@ -40,15 +50,15 @@ export const routers = createRouter({
 ```tsx
 import { routers } from "./routers";
 
-function App() {
+function Welcome() {
   const handlePushProduct = () => {
-    routers.welcome.push();
+    routers.user.push();
   };
   const handleReleaseProduct = () => {
-    routers.welcome.replace({ id: "123" });
+    routers.user.replace({ id: "123" });
   };
   const handleClearToProduct = () => {
-    routers.welcome.clearTo();
+    routers.user.clearTo();
   };
   const handleGoBack = () => {
     routers.goBack();
@@ -59,10 +69,11 @@ function App() {
       <div onClick={handleReleaseProduct}>release product</div>
       <div onClick={handleClearToProduct}>clear all stack and push product</div>
       <div onClick={handleGoBack}>go back</div>
-      <routers.Router />
     </div>
   );
 }
+
+export default Welcome;
 ```
 
 ## Use params
@@ -96,9 +107,7 @@ function App(p: {dog}) {
 const Page: Component = (props) => {
   return (
     <Show when={props.stackTop}>
-      <div onclick={() => routers.goBack({ fish: new Date().toISOString() })}>go back</div>
-      <div>fish page aaaaaaaaaa</div>
-      <div onclick={() => routers.hello_dog.replace()}>replace to dog</div>
+      <div>the page</div>
     </Show>
   );
 };
@@ -109,11 +118,8 @@ const Page: Component = (props) => {
 ```tsx
 import { useAnimationNavigation } from "solid-router-stack";
 
-// like iOS application
-useAnimationNavigation("moveLeft");
-
-// like Android application
-useAnimationNavigation("moveUp");
+// like application
+useAnimationNavigation("moveTop");
 ```
 
 ## Events listen

@@ -206,7 +206,7 @@ export const createRouters = <T extends Record<string, Router>>(
       }
     }
     return (
-      <div>
+      <div style={{ background: "inherit" }}>
         <For each={stack.list}>
           {(item, i) => {
             const router = routerMaps[item.path] || stackOptions.notFound;
@@ -225,7 +225,7 @@ export const createRouters = <T extends Record<string, Router>>(
                   left: "0px",
                   width: ignoreFull ? void 0 : getW() + "px",
                   height: ignoreFull ? void 0 : getH() + "px",
-                  background: "#fff",
+                  background: "inherit",
                 }}
               >
                 {router.async ? (
