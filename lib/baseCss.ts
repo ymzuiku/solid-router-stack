@@ -25,36 +25,8 @@ export const moveTopCss = (t: number) => {
 `;
 };
 
-export const scaleCss = (t: number) => {
-  const transition = `transition: transform ${t}ms cubic-bezier(.54,.13,.46,1), opacity ${t}ms cubic-bezier(.54,.13,.46,1);`;
-  return `
-.solid-router-stack-now {
-  ${transition}
-}
-.solid-router-stack-before {
-  ${transition}
-  will-change: transform, opacity;
-  opacity: 0;
-  transform: scale(0.8);
-}
-.solid-router-stack-leave {
-  ${transition}
-  will-change: transform, opacity;
-  transform: scale(0.8);
-  opacity: 0;
-  pointer-events: none !important;
-}
-.solid-router-stack-after {
-  ${transition}
-  will-change: transform, opacity;
-  transform: scale(1.05);
-  pointer-events: none !important;
-}
-`;
-};
-
 export const moveLeftCss = (t: number) => {
-  const transition = `transition: transform ${t}ms cubic-bezier(.54,.13,.46,1), opacity ${t}ms cubic-bezier(.54,.13,.46,1);`;
+  const transition = `transition: transform ${t}ms ease-out, opacity ${t}ms ease-out;`;
   return `
 .solid-router-stack-now {
   ${transition}
@@ -77,6 +49,34 @@ export const moveLeftCss = (t: number) => {
   ${transition}
   will-change: transform, opacity;
   transform: translateX(-30vw);
+  pointer-events: none !important;
+}
+`;
+};
+
+export const scaleCss = (t: number) => {
+  const transition = `transition: transform ${t}ms ease-out, opacity ${t}ms ease-out;`;
+  return `
+.solid-router-stack-now {
+  ${transition}
+}
+.solid-router-stack-before {
+  ${transition}
+  will-change: transform, opacity;
+  opacity: 0;
+  transform: scale(0.8);
+}
+.solid-router-stack-leave {
+  ${transition}
+  will-change: transform, opacity;
+  transform: scale(0.8);
+  opacity: 0;
+  pointer-events: none !important;
+}
+.solid-router-stack-after {
+  ${transition}
+  will-change: transform, opacity;
+  transform: scale(1.05);
   pointer-events: none !important;
 }
 `;

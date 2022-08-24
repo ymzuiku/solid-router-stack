@@ -30,7 +30,7 @@ const moveMap = {
 
 export const setNavigationAnimation = (
   type: "moveTop" | "moveLeft" | "scale" | "auto" | "none",
-  duration = 250
+  duration = 150
 ) => {
   if (type === "none") {
     stackOptions.navigationDuration = 0;
