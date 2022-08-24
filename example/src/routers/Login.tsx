@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
+import { createPropsSignal } from "solid-router-stack";
 import { tw } from "twind";
-import { createPropsSignal } from "../../../lib";
 import { buttonCss } from "./classlist";
 
 import { routers } from "./routers";
