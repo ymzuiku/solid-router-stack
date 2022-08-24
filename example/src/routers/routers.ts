@@ -8,9 +8,10 @@ document.body.className = tw`bg-gray-800`;
 
 export const routers = createRouters({
   Welcome: {
+    // render: () => import("./Welcome"),
+    path: "/welcome",
     render: Welcome,
     async: true,
-    path: "/welcome",
     preload: ["Login"],
   },
   Login: {

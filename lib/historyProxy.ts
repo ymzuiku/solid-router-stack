@@ -24,16 +24,28 @@ export const beforeChange = (event: BeforeEvent) => {
   beforeChangeEvent.push(event);
 };
 
+const newStack = (url: string): Stack => {
+  return {
+    url,
+    path: url.split("?")[0],
+    params: searchUrlToObject(url) || {},
+    time: Date.now(),
+    index: historyProxy.stack.length,
+  };
+};
+
 let lastUrl = "";
 
 ["popstate", "pushState", "replaceState", "backState"].forEach((v) => {
   window.addEventListener(v, () => {
     const url = nowUrl();
-    console.log("__debug__", "inin", url, lastUrl);
     if (v === "popstate") {
       if (url === lastUrl) {
         const fullUrl = nowFullUrl();
-        historyProxy.stack[historyProxy.stack.length - 1] = newStack(fullUrl);
+        const stack = newStack(fullUrl);
+        const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
+        lastStack.url = stack.url;
+        lastStack.params = stack.params;
       } else {
         historyProxy.stack.pop();
       }
@@ -46,14 +58,25 @@ let lastUrl = "";
   });
 });
 
-const newStack = (url: string): Stack => {
-  return {
-    url,
-    path: url.split("?")[0],
-    params: searchUrlToObject(url) || {},
-    time: Date.now(),
-    index: historyProxy.stack.length,
-  };
+const baseGoBack = (data?: Record<string, unknown>) => {
+  const len = historyProxy.stack.length;
+  if (len == 1) {
+    return "";
+  }
+  historyProxy.stack.pop();
+  let stack = historyProxy.stack[historyProxy.stack.length - 1];
+
+  let url = stack.path;
+  if (historyProxy.useHash) {
+    url = "/#" + stack.path;
+  }
+  url = parasmUrl(url, {
+    ...searchUrlToObject(stack.url),
+    ...data,
+  });
+  stack.params = searchUrlToObject(url) || {};
+  stack.url = url;
+  return url;
 };
 
 const push = (url: string) => {
@@ -96,26 +119,6 @@ const replace = (url: string) => {
 
   history.replaceState(null, "", url);
   window.dispatchEvent(new Event("replaceState"));
-};
-
-const baseGoBack = (data?: Record<string, unknown>) => {
-  const len = historyProxy.stack.length;
-  if (len == 1) {
-    return "";
-  }
-  historyProxy.stack.pop();
-  let stack = historyProxy.stack[historyProxy.stack.length - 1];
-
-  let url = stack.path;
-  if (historyProxy.useHash) {
-    url = "/#" + stack.path;
-  }
-  url = parasmUrl(url, {
-    ...searchUrlToObject(stack.url),
-    ...data,
-  });
-  stack.url = url;
-  return url;
 };
 
 const goBack = (data?: Record<string, unknown>) => {

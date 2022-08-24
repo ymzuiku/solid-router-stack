@@ -1,4 +1,11 @@
-import { createRoot, createSignal, For, lazy, Suspense } from "solid-js";
+import {
+  createRoot,
+  createSignal,
+  For,
+  lazy,
+  Suspense,
+  SuspenseList,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import { historyProxy, Stack } from "./historyProxy";
 import { isIOSWechat } from "./isIOSWechat";
@@ -39,11 +46,18 @@ export const createRouters = <T extends Record<string, Router>>(
     }
   };
 
+  const setStackTop = () => {
+    const lastReal = historyProxy.stack[historyProxy.stack.length - 1];
+    const nextParams = lastReal
+      ? { ...historyProxy.searchUrlToObject(lastReal.url) }
+      : {};
+    setStack("list", stack.list.length - 1, "params", nextParams);
+  };
+
   let lastLen = 0;
   let ignoreAnime = false;
   historyProxy.listen(() => {
     const nowLen = historyProxy.stack.length;
-    const last = historyProxy.stack[historyProxy.stack.length - 1];
     if (stackOptions.navigationDuration > 0) {
       if (nowLen > lastLen) {
         // push
@@ -58,8 +72,9 @@ export const createRouters = <T extends Record<string, Router>>(
         } else {
           setNowStackClass(classBefore);
           requestAnimationFrame(() => {
-            setNowStackClass(classNow);
             setLastStackClass(classAfter);
+            setNowStackClass(classNow);
+            setStackTop();
           });
         }
       } else if (lastLen !== nowLen && nowLen >= 1) {
@@ -76,8 +91,9 @@ export const createRouters = <T extends Record<string, Router>>(
         } else {
           setTimeout(() => {
             setStack("list", [...historyProxy.stack]);
-            setNowStackClass(classNow);
             setStack("list", stack.list.length - 1, { stackTop: true } as any);
+            setNowStackClass(classNow);
+            setStackTop();
           }, stackOptions.navigationDuration);
         }
       } else {
@@ -88,6 +104,7 @@ export const createRouters = <T extends Record<string, Router>>(
           setStack("list", stack.list.length - 2, { stackTop: false } as any);
         }
         setNowStackClass(classNow);
+        setStackTop();
       }
     } else {
       setStack("list", [...historyProxy.stack]);
@@ -96,13 +113,11 @@ export const createRouters = <T extends Record<string, Router>>(
         setStack("list", stack.list.length - 2, { stackTop: false } as any);
       }
       setNowStackClass(classNow);
+      setStackTop();
     }
 
     lastLen = nowLen;
 
-    setStack("list", historyProxy.stack.length - 1, {
-      params: last ? { ...historyProxy.searchUrlToObject(last.url) } : {},
-    } as any);
     if (ignoreAnime) {
       requestAnimationFrame(() => {
         ignoreAnime = false;
@@ -207,38 +222,40 @@ export const createRouters = <T extends Record<string, Router>>(
     }
     return (
       <div style={{ background: "inherit" }}>
-        <For each={stack.list}>
-          {(item, i) => {
-            const router = routerMaps[item.path] || stackOptions.notFound;
-            preload(router);
-            const Component = router.Component;
+        <SuspenseList revealOrder="forwards" tail="collapsed">
+          <For each={stack.list}>
+            {(item, i) => {
+              const router = routerMaps[item.path] || stackOptions.notFound;
+              preload(router);
+              const Component = router.Component;
 
-            return (
-              <div
-                data-path={item.path}
-                class={item.className}
-                style={{
-                  "pointer-events": item.stackTop ? "auto" : "none",
-                  position: "fixed",
-                  "z-index": i() * 10,
-                  top: "0px",
-                  left: "0px",
-                  width: ignoreFull ? void 0 : getW() + "px",
-                  height: ignoreFull ? void 0 : getH() + "px",
-                  background: "inherit",
-                }}
-              >
-                {router.async ? (
-                  <Component stackTop={item.stackTop} {...item.params} />
-                ) : (
-                  <Suspense fallback={stackOptions.fallback}>
+              return (
+                <div
+                  data-path={item.path}
+                  class={item.className}
+                  style={{
+                    "pointer-events": item.stackTop ? "auto" : "none",
+                    position: "fixed",
+                    "z-index": i() * 10,
+                    top: "0px",
+                    left: "0px",
+                    width: ignoreFull ? void 0 : getW() + "px",
+                    height: ignoreFull ? void 0 : getH() + "px",
+                    background: "inherit",
+                  }}
+                >
+                  {router.async ? (
                     <Component stackTop={item.stackTop} {...item.params} />
-                  </Suspense>
-                )}
-              </div>
-            );
-          }}
-        </For>
+                  ) : (
+                    <Suspense fallback={stackOptions.fallback}>
+                      <Component stackTop={item.stackTop} {...item.params} />
+                    </Suspense>
+                  )}
+                </div>
+              );
+            }}
+          </For>
+        </SuspenseList>
       </div>
     );
   };
