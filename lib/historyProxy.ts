@@ -24,15 +24,25 @@ export const beforeChange = (event: BeforeEvent) => {
   beforeChangeEvent.push(event);
 };
 
+let lastUrl = "";
+
 ["popstate", "pushState", "replaceState", "backState"].forEach((v) => {
   window.addEventListener(v, () => {
+    const url = nowUrl();
+    console.log("__debug__", "inin", url, lastUrl);
     if (v === "popstate") {
-      historyProxy.stack.pop();
+      if (url === lastUrl) {
+        const fullUrl = nowFullUrl();
+        historyProxy.stack[historyProxy.stack.length - 1] = newStack(fullUrl);
+      } else {
+        historyProxy.stack.pop();
+      }
     }
     const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
     events.forEach((e) => {
       e(lastStack ? lastStack.path : "", v as State, historyProxy.stack);
     });
+    lastUrl = url;
   });
 });
 
@@ -90,19 +100,11 @@ const replace = (url: string) => {
 
 const baseGoBack = (data?: Record<string, unknown>) => {
   const len = historyProxy.stack.length;
-  if (len > 1) {
-    historyProxy.stack.pop();
+  if (len == 1) {
+    return "";
   }
+  historyProxy.stack.pop();
   let stack = historyProxy.stack[historyProxy.stack.length - 1];
-  if (len === 1) {
-    const oldTime = stack.time;
-    const oldUrl = stack.url;
-    stack = newStack(historyProxy.onLastBack(stack));
-    if (oldUrl === stack.url) {
-      stack.time = oldTime;
-    }
-    historyProxy.stack[historyProxy.stack.length - 1] = stack;
-  }
 
   let url = stack.path;
   if (historyProxy.useHash) {
@@ -112,18 +114,24 @@ const baseGoBack = (data?: Record<string, unknown>) => {
     ...searchUrlToObject(stack.url),
     ...data,
   });
-  stack.url;
+  stack.url = url;
   return url;
 };
 
 const goBack = (data?: Record<string, unknown>) => {
   const url = baseGoBack(data);
+  if (url == "") {
+    return;
+  }
   history.replaceState(null, "", url);
   window.dispatchEvent(new Event("backState"));
 };
 
 const gobackNotHistory = (data?: Record<string, unknown>) => {
   const url = baseGoBack(data);
+  if (url == "") {
+    return;
+  }
   history.replaceState(null, "", url);
   window.dispatchEvent(new Event("replaceState"));
 };

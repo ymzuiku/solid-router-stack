@@ -1,48 +1,70 @@
-import{template as kt}from"solid-js/web";import{mergeProps as Y}from"solid-js/web";import{className as vt}from"solid-js/web";import{setAttribute as wt}from"solid-js/web";import{effect as yt}from"solid-js/web";import{memo as St}from"solid-js/web";import{insert as q}from"solid-js/web";import{createComponent as S}from"solid-js/web";import{createRoot as bt,createSignal as G,For as xt,lazy as Et,Suspense as Tt}from"solid-js";import{createStore as _t}from"solid-js/store";var B=[],ot=t=>{B.push(t)},w=[],nt=t=>{w.push(t)};["popstate","pushState","replaceState","backState"].forEach(t=>{window.addEventListener(t,()=>{t==="popstate"&&e.stack.pop();let n=e.stack[e.stack.length-1];B.forEach(s=>{s(n?n.path:"",t,e.stack)})})});var m=t=>({url:t,path:t.split("?")[0],params:_(t)||{},time:Date.now(),index:e.stack.length}),rt=t=>{w.forEach(n=>{t=n(t)}),e.stack.push(m(t)),e.useHash&&(t="/#"+t),history.pushState(null,"",t),window.dispatchEvent(new Event("pushState"))},at=t=>{w.forEach(n=>{t=n(t)}),e.stack.push(m(t)),e.useHash&&(t="/#"+t),history.replaceState(null,"",t),window.dispatchEvent(new Event("replaceState"))},F=t=>{w.forEach(n=>{t=n(t)}),e.stack.length>0&&e.stack.pop(),e.stack.push(m(t)),e.useHash&&(t="/#"+t),history.replaceState(null,"",t),window.dispatchEvent(new Event("replaceState"))},W=t=>{let n=e.stack.length;n>1&&e.stack.pop();let s=e.stack[e.stack.length-1];if(n===1){let c=s.time,l=s.url;s=m(e.onLastBack(s)),l===s.url&&(s.time=c),e.stack[e.stack.length-1]=s}let r=s.path;return e.useHash&&(r="/#"+s.path),r=I(r,{..._(s.url),...t}),s.url,r},it=t=>{let n=W(t);history.replaceState(null,"",n),window.dispatchEvent(new Event("backState"))},ct=t=>{let n=W(t);history.replaceState(null,"",n),window.dispatchEvent(new Event("replaceState"))},lt=t=>{e.stack=[m(t)],F(t)};function pt(){let[t,n]=location.href.split("#");return new URLSearchParams([t.split("?")[1],n.split("?")[1]].join("&"))}function ft(){if(!location.hash)return"/";let t=location.hash.split("#");return t.length<2?"/":t[1].split("?")[0]}function ut(){if(!location.hash)return"/";let t=location.hash.split("#");return t.length<2?"/":t[1]}function I(t,n){if(n){let s={};Object.keys(n).forEach(c=>{let l=n[c];l!==void 0&&l!==""&&(s[c]=l)});let r=new URLSearchParams(s).toString();return r?t+"?"+r:t}return t}function _(t){let[n,s]=t.split("#"),r=new URLSearchParams([n.split("?")[1],s?s.split("?")[1]:""].join("&")),c={},l=!1;for(let[g,f]of r.entries())l=!0,f!==void 0&&f!==""&&(c[g]=f);if(!!l)return c}var e={search:pt,nowUrl:ft,nowFullUrl:ut,push:rt,pushNotHistory:at,replace:F,goBack:it,gobackNotHistory:ct,clearTo:lt,listen:ot,beforeChange:nt,searchUrlToObject:_,parasmUrl:I,onLastBack:t=>t.url,newStack:m,stack:[],useHash:!1};var y;function $(){if(y!==void 0)return y;let t=navigator.userAgent.toLocaleLowerCase();return y=new RegExp("(iphone|ipod|ipad)").test(t)&&new RegExp("(micromessenger)").test(t),y}import{template as D}from"solid-js/web";var ht=D("<div>Not found page</div>",2),dt=D("<div></div>",2),u={navigationDuration:0,notFound:{async:!0,render:()=>ht.cloneNode(!0)},fallback:dt.cloneNode(!0)};var z=`
+import{template as wt}from"solid-js/web";import{mergeProps as J}from"solid-js/web";import{className as yt}from"solid-js/web";import{setAttribute as bt}from"solid-js/web";import{effect as $t}from"solid-js/web";import{memo as St}from"solid-js/web";import{insert as K}from"solid-js/web";import{createComponent as $}from"solid-js/web";import{createRoot as xt,createSignal as V,For as Et,lazy as Tt,Suspense as _t}from"solid-js";import{createStore as Ut}from"solid-js/store";var z=[],ct=t=>{z.push(t)},w=[],lt=t=>{w.push(t)},T="";["popstate","pushState","replaceState","backState"].forEach(t=>{window.addEventListener(t,()=>{let e=M();if(console.log("__debug__","inin",e,T),t==="popstate")if(e===T){let o=X();s.stack[s.stack.length-1]=m(o)}else s.stack.pop();let n=s.stack[s.stack.length-1];z.forEach(o=>{o(n?n.path:"",t,s.stack)}),T=e})});var m=t=>({url:t,path:t.split("?")[0],params:_(t)||{},time:Date.now(),index:s.stack.length}),pt=t=>{w.forEach(e=>{t=e(t)}),s.stack.push(m(t)),s.useHash&&(t="/#"+t),history.pushState(null,"",t),window.dispatchEvent(new Event("pushState"))},ft=t=>{w.forEach(e=>{t=e(t)}),s.stack.push(m(t)),s.useHash&&(t="/#"+t),history.replaceState(null,"",t),window.dispatchEvent(new Event("replaceState"))},I=t=>{w.forEach(e=>{t=e(t)}),s.stack.length>0&&s.stack.pop(),s.stack.push(m(t)),s.useHash&&(t="/#"+t),history.replaceState(null,"",t),window.dispatchEvent(new Event("replaceState"))},D=t=>{if(s.stack.length==1)return"";s.stack.pop();let n=s.stack[s.stack.length-1],o=n.path;return s.useHash&&(o="/#"+n.path),o=Y(o,{..._(n.url),...t}),n.url=o,o},ut=t=>{let e=D(t);e!=""&&(history.replaceState(null,"",e),window.dispatchEvent(new Event("backState")))},ht=t=>{let e=D(t);e!=""&&(history.replaceState(null,"",e),window.dispatchEvent(new Event("replaceState")))},dt=t=>{s.stack=[m(t)],I(t)};function mt(){let[t,e]=location.href.split("#");return new URLSearchParams([t.split("?")[1],e.split("?")[1]].join("&"))}function M(){if(!location.hash)return"/";let t=location.hash.split("#");return t.length<2?"/":t[1].split("?")[0]}function X(){if(!location.hash)return"/";let t=location.hash.split("#");return t.length<2?"/":t[1]}function Y(t,e){if(e){let n={};Object.keys(e).forEach(c=>{let f=e[c];f!==void 0&&f!==""&&(n[c]=f)});let o=new URLSearchParams(n).toString();return o?t+"?"+o:t}return t}function _(t){let[e,n]=t.split("#"),o=new URLSearchParams([e.split("?")[1],n?n.split("?")[1]:""].join("&")),c={},f=!1;for(let[k,p]of o.entries())f=!0,p!==void 0&&p!==""&&(c[k]=p);if(!!f)return c}var s={search:mt,nowUrl:M,nowFullUrl:X,push:pt,pushNotHistory:ft,replace:I,goBack:ut,gobackNotHistory:ht,clearTo:dt,listen:ct,beforeChange:lt,searchUrlToObject:_,parasmUrl:Y,onLastBack:t=>t.url,newStack:m,stack:[],useHash:!1};var y;function U(){if(y!==void 0)return y;let t=navigator.userAgent.toLocaleLowerCase();return y=new RegExp("(iphone|ipod|ipad)").test(t)&&new RegExp("(micromessenger)").test(t),y}import{template as q}from"solid-js/web";var gt=q("<div>Not found page</div>",2),kt=q("<div></div>",2),u={navigationDuration:0,notFound:{async:!0,render:()=>gt.cloneNode(!0)},fallback:kt.cloneNode(!0)};var b=t=>{let e=`transition: transform ${t}ms ease-out, opacity ${t}ms ease-out;`;return`
 .solid-router-stack-now {
-  transition: transform 200ms ease-out, opacity 200ms ease-out;
+  ${e}
 }
 .solid-router-stack-before {
+  ${e}
   will-change: transform, opacity;
-  transition: transform 200ms ease-out, opacity 200ms ease-out;
-  opacity: 0.7;
-  transform: translateY(10vh);
+  transform: translateY(7vh);
 }
 .solid-router-stack-leave {
+  ${e}
   will-change: transform, opacity;
-  transition: transform 200ms ease-out, opacity 200ms ease-out;
   opacity: 0;
   transform: translateY(15vh);
   pointer-events: none !important;
 }
 .solid-router-stack-after {
+  ${e}
   will-change: transform, opacity;
-  transition: transform 200ms ease-out, opacity 200ms ease-out;
   transform: translateY(-5vh);
   pointer-events: none !important;
 }
-`,X=`
+`},G=t=>{let e=`transition: transform ${t}ms cubic-bezier(.54,.13,.46,1), opacity ${t}ms cubic-bezier(.54,.13,.46,1);`;return`
 .solid-router-stack-now {
-  transition: transform 200ms ease-out;
+  ${e}
+}
+.solid-router-stack-before {
+  ${e}
+  will-change: transform, opacity;
+  opacity: 0;
+  transform: scale(0.8);
+}
+.solid-router-stack-leave {
+  ${e}
+  will-change: transform, opacity;
+  transform: scale(0.8);
+  opacity: 0;
+  pointer-events: none !important;
+}
+.solid-router-stack-after {
+  ${e}
+  will-change: transform, opacity;
+  transform: scale(1.05);
+  pointer-events: none !important;
+}
+`},C=t=>{let e=`transition: transform ${t}ms cubic-bezier(.54,.13,.46,1), opacity ${t}ms cubic-bezier(.54,.13,.46,1);`;return`
+.solid-router-stack-now {
+  ${e}
   box-shadow: -10px 0px 20px rgba(0,0,0,0.12);
 }
 .solid-router-stack-before {
+  ${e}
   will-change: transform, opacity;
-  transition: transform 200ms ease-out;
   transform: translateX(100vw);
   box-shadow: -10px 0px 20px rgba(0,0,0,0.12);
 }
 .solid-router-stack-leave {
+  ${e}
   will-change: transform, opacity;
-  transition: transform 200ms ease-out;
   transform: translateX(100vw);
   box-shadow: 0px -10px 20px rgba(0,0,0,0.12);
   pointer-events: none !important;
 }
 .solid-router-stack-after {
+  ${e}
   will-change: transform, opacity;
-  transition: transform 200ms ease-out;
   transform: translateX(-30vw);
   pointer-events: none !important;
 }
-`;var mt=(t,n=220)=>{if(Object.assign(u,{navigationDuration:n}),typeof window<"u"&&!document.getElementById("solid-router-stack-css")){let s=document.createElement("style");s.id="solid-router-stack-css",s.innerHTML=t,document.head.append(s)}},gt=t=>{mt(t=="moveTop"?z:X)};var M=kt("<div></div>",2);var k="solid-router-stack-now",$t="solid-router-stack-before",Ut="solid-router-stack-leave",b="solid-router-stack-after",Qt=t=>{let n={...t},[s,r]=bt(()=>_t({list:e.stack})),c=o=>{r("list",s.list.length-1,{className:o})},l=o=>{s.list.length>1&&r("list",s.list.length-2,{className:o})},g=0,f=!1;e.listen(()=>{let o=e.stack.length,a=e.stack[e.stack.length-1];u.navigationDuration>0?o>g?(r("list",[...e.stack]),r("list",s.list.length-1,{stackTop:!0}),s.list.length>1&&r("list",s.list.length-2,{stackTop:!1}),f?(c(k),l(b)):(c($t),requestAnimationFrame(()=>{c(k),l(b)}))):g!==o?(r("list",s.list.length-2,{stackTop:!0}),s.list.length>2&&r("list",s.list.length-3,{stackTop:!1}),c(Ut),l(k),f?r("list",[...e.stack]):setTimeout(()=>{r("list",[...e.stack])},u.navigationDuration)):(r("list",[...e.stack]),r("list",s.list.length-1,{stackTop:!0}),s.list.length>1&&r("list",s.list.length-2,{stackTop:!1}),c(k),l(b)):(r("list",[...e.stack]),r("list",s.list.length-1,{stackTop:!0}),s.list.length>1&&r("list",s.list.length-2,{stackTop:!1}),c(k),l(b)),g=o,r("list",e.stack.length-1,{params:a?e.searchUrlToObject(a.url):{}}),f&&requestAnimationFrame(()=>{f=!1})});let J=o=>{$()?e.gobackNotHistory(o):e.goBack(o)},U=o=>{o.async?o.Component=o.render:o.Component=Et(o.render),o.push=a=>{$()?e.pushNotHistory(e.parasmUrl(o.path,a)):e.push(e.parasmUrl(o.path,a))},o.replace=a=>{e.replace(e.parasmUrl(o.path,a))},o.clearTo=a=>{e.clearTo(e.parasmUrl(o.path,a))}};U(u.notFound),Object.keys(n).forEach(o=>{let a=n[o];U(a)});let x={},C=[];Object.keys(n).map(o=>{let a=n[o];a&&(x[a.path]=a,a.async||C.push(a))});function K(o){o.preloadAll?C.forEach(a=>{a.render()}):o.preload&&setTimeout(()=>{o.preload().forEach(d=>{d.async||d.render()})},200)}let Q=({root:o,hash:a,ignoreFull:d})=>{e.useHash=!!a;let E=e.nowUrl(),P=e.searchUrlToObject(e.nowFullUrl());if(f=!0,E!=="/"&&E!==o.path){o.push();let v=x[E]||u.notFound;f=!0,v.push({...P})}else o.push(P);let[V,Z]=G(typeof window<"u"?window.innerWidth:0),[tt,et]=G(typeof window<"u"?window.innerHeight:0);return d||typeof window<"u"&&window.addEventListener("resize",()=>{Z(window.innerWidth),et(window.innerHeight)}),(()=>{let v=M.cloneNode(!0);return q(v,S(xt,{get each(){return s.list},children:(h,st)=>{let T=x[h.path]||u.notFound;K(T);let R=T.Component;return(()=>{let p=M.cloneNode(!0);return p.style.setProperty("position","fixed"),p.style.setProperty("top","0px"),p.style.setProperty("left","0px"),p.style.setProperty("background","#fff"),q(p,(()=>{let i=St(()=>!!T.async,!0);return()=>i()?S(R,Y({get stackTop(){return h.stackTop}},()=>h.params)):S(Tt,{get fallback(){return u.fallback},get children(){return S(R,Y({get stackTop(){return h.stackTop}},()=>h.params))}})})()),yt(i=>{let L=h.path,N=h.className,H=h.stackTop?"auto":"none",O=st()*10,A=d?void 0:V()+"px",j=d?void 0:tt()+"px";return L!==i._v$&&wt(p,"data-path",i._v$=L),N!==i._v$2&&vt(p,i._v$2=N),H!==i._v$3&&p.style.setProperty("pointer-events",i._v$3=H),O!==i._v$4&&p.style.setProperty("z-index",i._v$4=O),A!==i._v$5&&p.style.setProperty("width",i._v$5=A),j!==i._v$6&&p.style.setProperty("height",i._v$6=j),i},{_v$:void 0,_v$2:void 0,_v$3:void 0,_v$4:void 0,_v$5:void 0,_v$6:void 0}),p})()}})),v})()};return{...n,goBack:J,search:e.search,nowUrl:e.nowUrl,nowFullUrl:e.nowFullUrl,searchUrlToObject:e.searchUrlToObject,listen:e.listen,beforeChange:e.beforeChange,getStack:()=>e.stack,Routers:Q}};export{Qt as createRouters,X as moveLeftCss,z as moveTopCss,gt as useAnimationNavigation};
+`};var L=(t,e=260)=>{if(Object.assign(u,{navigationDuration:e}),typeof window<"u"){let n=document.getElementById("solid-router-stack-css");if(n)n.innerHTML=t;else{let o=document.createElement("style");o.id="solid-router-stack-css",o.innerHTML=t,document.head.append(o)}}},vt={moveTop:b,moveLeft:C,scale:G},Bt=(t,e=250)=>{if(t==="none"){u.navigationDuration=0;let n=document.getElementById("solid-router-stack-css");n&&n.remove()}else t==="auto"?typeof window>"u"?L(b(e),e+10):L(window.innerWidth>window.innerHeight?b(e):C(e+10),260):L(vt[t](e),e+10)};var Q=wt("<div></div>",2),g="solid-router-stack-now",Ct="solid-router-stack-before",Lt="solid-router-stack-leave",Z="solid-router-stack-after",Zt=t=>{let e={...t},[n,o]=xt(()=>Ut({list:s.stack})),c=r=>{o("list",n.list.length-1,{className:r})},f=r=>{n.list.length>1&&o("list",n.list.length-2,{className:r})},k=0,p=!1;s.listen(()=>{let r=s.stack.length,a=s.stack[s.stack.length-1];u.navigationDuration>0?r>k?(o("list",[...s.stack]),o("list",n.list.length-1,{stackTop:!0}),n.list.length>1&&o("list",n.list.length-2,{stackTop:!1}),p?(c(g),f(Z)):(c(Ct),requestAnimationFrame(()=>{c(g),f(Z)}))):k!==r&&r>=1?(o("list",n.list.length-2,{stackTop:!0}),n.list.length>2&&o("list",n.list.length-3,{stackTop:!1}),c(Lt),f(g),p?(o("list",[...s.stack]),o("list",n.list.length-1,{stackTop:!0})):setTimeout(()=>{o("list",[...s.stack]),c(g),o("list",n.list.length-1,{stackTop:!0})},u.navigationDuration)):(o("list",[...s.stack]),o("list",n.list.length-1,{stackTop:!0}),n.list.length>1&&o("list",n.list.length-2,{stackTop:!1}),c(g)):(o("list",[...s.stack]),o("list",n.list.length-1,{stackTop:!0}),n.list.length>1&&o("list",n.list.length-2,{stackTop:!1}),c(g)),k=r,o("list",s.stack.length-1,{params:a?{...s.searchUrlToObject(a.url)}:{}}),p&&requestAnimationFrame(()=>{p=!1})});let tt=r=>{U()?s.gobackNotHistory(r):s.goBack(r)},P=r=>{r.async?r.Component=r.render:r.Component=Tt(r.render),r.push=a=>{U()?s.pushNotHistory(s.parasmUrl(r.path,a)):s.push(s.parasmUrl(r.path,a))},r.replace=a=>{s.replace(s.parasmUrl(r.path,a))},r.clearTo=a=>{p=!0,s.clearTo(s.parasmUrl(r.path,a))}};P(u.notFound),Object.keys(e).forEach(r=>{let a=e[r];P(a)});let S={},R=[];Object.keys(e).map(r=>{let a=e[r];a&&(S[a.path]=a,a.async||R.push(a))});function et(r){r.preloadAll?R.forEach(a=>{a.render()}):r.preload&&r.preload.length&&setTimeout(()=>{r.preload.forEach(a=>{let d=e[a];d&&!d.async&&d.render()})},200)}let st=({root:r,hash:a,ignoreFull:d})=>{s.useHash=!!a;let x=s.nowUrl(),H=s.searchUrlToObject(s.nowFullUrl());if(p=!0,x!=="/"&&x!==r.path){r.push();let v=S[x]||u.notFound;p=!0,v.push({...H})}else r.push(H);let[nt,ot]=V(typeof window<"u"?window.innerWidth:0),[rt,at]=V(typeof window<"u"?window.innerHeight:0);return d||typeof window<"u"&&window.addEventListener("resize",()=>{ot(window.innerWidth),at(window.innerHeight)}),(()=>{let v=Q.cloneNode(!0);return K(v,$(Et,{get each(){return n.list},children:(h,it)=>{let E=S[h.path]||u.notFound;et(E);let N=E.Component;return(()=>{let l=Q.cloneNode(!0);return l.style.setProperty("position","fixed"),l.style.setProperty("top","0px"),l.style.setProperty("left","0px"),l.style.setProperty("background","#fff"),K(l,(()=>{let i=St(()=>!!E.async,!0);return()=>i()?$(N,J({get stackTop(){return h.stackTop}},()=>h.params)):$(_t,{get fallback(){return u.fallback},get children(){return $(N,J({get stackTop(){return h.stackTop}},()=>h.params))}})})()),$t(i=>{let O=h.path,j=h.className,A=h.stackTop?"auto":"none",B=it()*10,F=d?void 0:nt()+"px",W=d?void 0:rt()+"px";return O!==i._v$&&bt(l,"data-path",i._v$=O),j!==i._v$2&&yt(l,i._v$2=j),A!==i._v$3&&l.style.setProperty("pointer-events",i._v$3=A),B!==i._v$4&&l.style.setProperty("z-index",i._v$4=B),F!==i._v$5&&l.style.setProperty("width",i._v$5=F),W!==i._v$6&&l.style.setProperty("height",i._v$6=W),i},{_v$:void 0,_v$2:void 0,_v$3:void 0,_v$4:void 0,_v$5:void 0,_v$6:void 0}),l})()}})),v})()};return{...e,goBack:tt,history:{search:s.search,nowUrl:s.nowUrl,nowFullUrl:s.nowFullUrl,searchUrlToObject:s.searchUrlToObject,listen:s.listen,beforeChange:s.beforeChange,getStack:()=>s.stack},Routers:st}};export{Zt as createRouters,C as moveLeftCss,b as moveTopCss,G as scaleCss,L as setCustomNavigationAnimation,Bt as setNavigationAnimation};

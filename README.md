@@ -9,6 +9,8 @@ features:
 - Like navigation, page is keep in dom
 - Auto split code pages
 - Easy preload some pages when entry a page
+- Auto use URL params input page's props
+- Virtual history in iOS Wechat application.
 
 ## Example
 
@@ -17,18 +19,18 @@ import { createRouter } from "solid-router-stack";
 import Welcome from "./welcome";
 
 export const routers = createRouter({
-  welcome: {
+  Welcome: {
     render: Welcome,
     // not use lazy import
     async: true,
   },
-  user: {
-    render: () => import("./user"),
-  },
-  login: {
+  Login: {
     render: () => import("./sign/Login"),
     // preload other pages
-    preload: () => [paths.welcome, paths.login],
+    preload: ["User"],
+  },
+  User: {
+    render: () => import("./user"),
   },
 });
 ```

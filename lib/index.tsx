@@ -10,9 +10,8 @@ import type {
   Routers,
   RoutersComonent,
 } from "./types";
-import { useAnimationNavigation } from "./useAnimationNavigation";
 export * from "./baseCss";
-export { useAnimationNavigation };
+export * from "./setNavigationAnimation";
 
 const classNow = "solid-router-stack-now";
 const classBefore = "solid-router-stack-before";
@@ -63,7 +62,7 @@ export const createRouters = <T extends Record<string, Router>>(
             setLastStackClass(classAfter);
           });
         }
-      } else if (lastLen !== nowLen) {
+      } else if (lastLen !== nowLen && nowLen >= 1) {
         // pop, 并且不是最后一个
         setStack("list", stack.list.length - 2, { stackTop: true } as any);
         if (stack.list.length > 2) {
@@ -73,9 +72,12 @@ export const createRouters = <T extends Record<string, Router>>(
         setLastStackClass(classNow);
         if (ignoreAnime) {
           setStack("list", [...historyProxy.stack]);
+          setStack("list", stack.list.length - 1, { stackTop: true } as any);
         } else {
           setTimeout(() => {
             setStack("list", [...historyProxy.stack]);
+            setNowStackClass(classNow);
+            setStack("list", stack.list.length - 1, { stackTop: true } as any);
           }, stackOptions.navigationDuration);
         }
       } else {
@@ -86,7 +88,6 @@ export const createRouters = <T extends Record<string, Router>>(
           setStack("list", stack.list.length - 2, { stackTop: false } as any);
         }
         setNowStackClass(classNow);
-        setLastStackClass(classAfter);
       }
     } else {
       setStack("list", [...historyProxy.stack]);
@@ -95,13 +96,12 @@ export const createRouters = <T extends Record<string, Router>>(
         setStack("list", stack.list.length - 2, { stackTop: false } as any);
       }
       setNowStackClass(classNow);
-      setLastStackClass(classAfter);
     }
 
     lastLen = nowLen;
 
     setStack("list", historyProxy.stack.length - 1, {
-      params: last ? historyProxy.searchUrlToObject(last.url) : {},
+      params: last ? { ...historyProxy.searchUrlToObject(last.url) } : {},
     } as any);
     if (ignoreAnime) {
       requestAnimationFrame(() => {
@@ -135,6 +135,7 @@ export const createRouters = <T extends Record<string, Router>>(
       historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
     item.clearTo = (state) => {
+      ignoreAnime = true;
       historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
     };
   };
@@ -161,12 +162,12 @@ export const createRouters = <T extends Record<string, Router>>(
       needPreloadAll.forEach((r) => {
         r.render();
       });
-    } else if (router.preload) {
+    } else if (router.preload && router.preload.length) {
       // 200 毫秒后预加载其他页面
       setTimeout(() => {
-        const list = router.preload!() as RouterItem[];
-        list.forEach((r) => {
-          if (!r.async) {
+        router.preload!.forEach((k) => {
+          const r = routers[k];
+          if (r && !r.async) {
             r.render();
           }
         });
@@ -245,13 +246,15 @@ export const createRouters = <T extends Record<string, Router>>(
   return {
     ...routers,
     goBack,
-    search: historyProxy.search,
-    nowUrl: historyProxy.nowUrl,
-    nowFullUrl: historyProxy.nowFullUrl,
-    searchUrlToObject: historyProxy.searchUrlToObject,
-    listen: historyProxy.listen,
-    beforeChange: historyProxy.beforeChange,
-    getStack: () => historyProxy.stack,
+    history: {
+      search: historyProxy.search,
+      nowUrl: historyProxy.nowUrl,
+      nowFullUrl: historyProxy.nowFullUrl,
+      searchUrlToObject: historyProxy.searchUrlToObject,
+      listen: historyProxy.listen,
+      beforeChange: historyProxy.beforeChange,
+      getStack: () => historyProxy.stack,
+    },
     Routers: RoutersComonent,
   } as any;
 };

@@ -40,7 +40,7 @@ const Login: Component = (p: { name?: string }) => {
         </div>
         <button
           onclick={() =>
-            routers.Dashboard.push({ name: p.name, yourClass: yourClass() })
+            routers.Dashboard.push({ name: name(), yourClass: yourClass() })
           }
           class={buttonCss}
         >
