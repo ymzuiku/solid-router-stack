@@ -130,11 +130,13 @@ setNavigationAnimation("moveTop");
 When use history change:
 
 ```tsx
-import { routers } from "./routers";
+import { historyProxy } from "solid-router-stack";
 
-routers.listen(({ fromUrl, toUrl, kind, index }) => {
-  console.log(fromUrl, toUrl, kind, index); // /hello, /next, "push", 2
-  return toUrl;
+historyProxy.beforeChange((url) => {
+  if (v.indexOf("/user") === 0) {
+    return "/login";
+  }
+  return url;
 });
 ```
 

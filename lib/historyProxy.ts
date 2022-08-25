@@ -17,7 +17,7 @@ export const listen = (event: Event) => {
   events.push(event);
 };
 
-type BeforeEvent = (path: string) => string;
+type BeforeEvent = (path: string) => string | Promise<string>;
 const beforeChangeEvent = [] as BeforeEvent[];
 
 export const beforeChange = (event: BeforeEvent) => {
@@ -79,10 +79,10 @@ const baseGoBack = (data?: Record<string, unknown>) => {
   return url;
 };
 
-const push = (url: string) => {
-  beforeChangeEvent.forEach((e) => {
-    url = e(url);
-  });
+const push = async (url: string) => {
+  for (const e of beforeChangeEvent) {
+    url = await Promise.resolve(e(url));
+  }
   // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
   if (historyProxy.useHash) {
@@ -92,10 +92,10 @@ const push = (url: string) => {
   window.dispatchEvent(new Event("pushState"));
 };
 
-const pushNotHistory = (url: string) => {
-  beforeChangeEvent.forEach((e) => {
-    url = e(url);
-  });
+const pushNotHistory = async (url: string) => {
+  for (const e of beforeChangeEvent) {
+    url = await Promise.resolve(e(url));
+  }
   // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
   if (historyProxy.useHash) {
@@ -105,10 +105,10 @@ const pushNotHistory = (url: string) => {
   window.dispatchEvent(new Event("replaceState"));
 };
 
-const replace = (url: string) => {
-  beforeChangeEvent.forEach((e) => {
-    url = e(url);
-  });
+const replace = async (url: string) => {
+  for (const e of beforeChangeEvent) {
+    url = await Promise.resolve(e(url));
+  }
   if (historyProxy.stack.length > 0) {
     historyProxy.stack.pop();
   }

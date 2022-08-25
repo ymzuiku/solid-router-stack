@@ -20,6 +20,7 @@ import type {
 export * from "./baseCss";
 export * from "./createPropsSignal";
 export * from "./setNavigationAnimation";
+export { historyProxy };
 
 const classNow = "solid-router-stack-now";
 const classBefore = "solid-router-stack-before";
@@ -307,15 +308,6 @@ export const createRouters = <T extends Record<string, Router>>(
   return {
     ...routers,
     goBack,
-    history: {
-      search: historyProxy.search,
-      nowUrl: historyProxy.nowUrl,
-      nowFullUrl: historyProxy.nowFullUrl,
-      searchUrlToObject: historyProxy.searchUrlToObject,
-      listen: historyProxy.listen,
-      beforeChange: historyProxy.beforeChange,
-      getStack: () => historyProxy.stack,
-    },
     Routers: RoutersComonent,
   } as any;
 };

@@ -7,8 +7,6 @@ import Logo from "../logo.svg";
 import { buttonCss } from "./classlist";
 import { routers } from "./routers";
 
-console.log((window as any)?.doooooooooog?.cat?.fish);
-
 const Welcome: Component<{ name: string; stackTop: boolean }> = (p) => {
   p = mergeProps({ name: "" }, p);
   const [getName, setName] = createPropsSignal(p, "name", "");

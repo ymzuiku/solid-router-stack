@@ -140,11 +140,13 @@ const Page: Component = (props) => {
 添加监听方法, 它会获取 fromUrl 和 toUrl, 您可以通过返回一个新的 URL 来替换原本应该导航的 toUrl
 
 ```tsx
-import { routers } from "./routers";
+import { historyProxy } from "solid-router-stack";
 
-routers.listen(({ fromUrl, toUrl, kind, index }) => {
-  console.log(fromUrl, toUrl, kind, index); // /hello, /next, "push", 2
-  return toUrl;
+historyProxy.beforeChange((url) => {
+  if (v.indexOf("/user") === 0) {
+    return "/login";
+  }
+  return url;
 });
 ```
 
