@@ -52,7 +52,7 @@ const Welcome: Component<{ name: string; stackTop: boolean }> = (p) => {
           Next Page
         </button>
         <p class={tw`mt-10`}>Scroll view and go back page</p>
-        <For each={Array(10).fill(0)}>
+        <For each={Array(6).fill(0)}>
           {() => (
             <div
               class={tw`animate-spin duration-500 w-40 h-40 mx-auto`}
