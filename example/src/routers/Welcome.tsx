@@ -55,7 +55,7 @@ const Welcome: Component<{ name: string; stackTop: boolean }> = (p) => {
         <For each={Array(6).fill(0)}>
           {() => (
             <div
-              class={tw`animate-spin duration-500 w-40 h-40 mx-auto`}
+              class={tw`animate-spin duration-500 w-60 h-60 mx-auto`}
               style={{ "animation-duration": "8s" }}
             >
               <Logo />
