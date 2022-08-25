@@ -10,7 +10,7 @@ export default defineConfig({
     solidSvg(),
     isProd &&
       require("@vitejs/plugin-legacy")({
-        targets: ["defaults", "not IE 11"],
+        targets: ["defaults"],
         polyfills: [
           "es/array",
           "es/array-buffer",
