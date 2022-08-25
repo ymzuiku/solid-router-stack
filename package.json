@@ -1,6 +1,6 @@
 {
   "name": "solid-router-stack",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "types": "lib/index.tsx",
   "main": "cjs/index.js",
   "private": false,

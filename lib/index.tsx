@@ -278,7 +278,7 @@ export const createRouters = <T extends Record<string, Router>>(
           const Component = router.Component;
           return (
             <div
-              data-path={item.path}
+              data-path={item.path()}
               class={item.css()}
               style={{
                 "pointer-events": item.top() ? "auto" : "none",
