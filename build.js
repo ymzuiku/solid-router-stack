@@ -18,7 +18,7 @@ build({
     ".svg": "dataurl",
   },
   logLevel: "info",
-  plugins: [solidPlugin()],
+  plugins: [solidPlugin({ dev: true })],
 }).catch(() => process.exit(1));
 
 build({
