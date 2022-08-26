@@ -69,10 +69,10 @@ function Welcome() {
   };
   return (
     <div>
-      <div onClick={handlePushProduct}>push product</div>
-      <div onClick={handleReleaseProduct}>release product</div>
-      <div onClick={handleClearToProduct}>clear all stack and push product</div>
-      <div onClick={handleGoBack}>go back</div>
+      <div onclick={handlePushProduct}>push product</div>
+      <div onclick={handleReleaseProduct}>release product</div>
+      <div onclick={handleClearToProduct}>clear all stack and push product</div>
+      <div onclick={handleGoBack}>go back</div>
     </div>
   );
 }
