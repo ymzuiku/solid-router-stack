@@ -1,19 +1,16 @@
 lockfileVersion: 5.4
 
-overrides:
-  react: 17.0.2
-
 specifiers:
   esbuild: ^0.15.5
   esbuild-plugin-solid: ^0.4.2
-  solid-js: ^1.4.8
+  solid-js: ^1.5.1
 
 dependencies:
-  solid-js: 1.4.8
+  solid-js: 1.5.1
 
 devDependencies:
   esbuild: 0.15.5
-  esbuild-plugin-solid: 0.4.2_sgawksunienzokoqfz2deh6eam
+  esbuild-plugin-solid: 0.4.2_72cwpcha7sr73tqsal5r5ignha
 
 packages:
 
@@ -445,6 +442,9 @@ packages:
       safe-buffer: 5.1.2
     dev: true
 
+  /csstype/3.1.0:
+    resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
+
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -605,7 +605,7 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-plugin-solid/0.4.2_sgawksunienzokoqfz2deh6eam:
+  /esbuild-plugin-solid/0.4.2_72cwpcha7sr73tqsal5r5ignha:
     resolution: {integrity: sha512-T5GphLoud3RumjeNYO3K9WVjWDzVKG5evlS7hUEUI0n9tiCL+CnbvJh3SSwFi3xeeXpZRrnZc1gd6FWQsVobTg==}
     peerDependencies:
       esbuild: '>=0.12'
@@ -615,7 +615,7 @@ packages:
       '@babel/preset-typescript': 7.18.6_@babel+core@7.18.10
       babel-preset-solid: 1.4.8_@babel+core@7.18.10
       esbuild: 0.15.5
-      solid-js: 1.4.8
+      solid-js: 1.5.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -751,8 +751,10 @@ packages:
     hasBin: true
     dev: true
 
-  /solid-js/1.4.8:
-    resolution: {integrity: sha512-XErZdnnYYXF7OwGSUAPcua2y5/ELB/c53zFCpWiEGqxTNoH1iQghzI8EsHJXk06sNn+Z/TGhb8bPDNNGSgimag==}
+  /solid-js/1.5.1:
+    resolution: {integrity: sha512-Y6aKystIxnrB0quV5nhqNuJV+l2Fk3/PQy1mMya/bzxlGiMHAym7v1NaqEgqDIvctbkxOi5dBj0ER/ewrH060g==}
+    dependencies:
+      csstype: 3.1.0
 
   /supports-color/5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
