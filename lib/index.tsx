@@ -288,7 +288,7 @@ export const createRouters = <T extends Record<string, Router>>(
                 left: "0px",
                 width: ignoreFull ? void 0 : getW() + "px",
                 height: ignoreFull ? void 0 : getH() + "px",
-                background: "inherit",
+                background: stackOptions.background,
               }}
             >
               {router.async ? (

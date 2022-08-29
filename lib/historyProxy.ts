@@ -17,7 +17,7 @@ export const listen = (event: Event) => {
   events.push(event);
 };
 
-type BeforeEvent = (path: string) => string | Promise<string>;
+type BeforeEvent = (url: string, path: string) => string | Promise<string>;
 const beforeChangeEvent = [] as BeforeEvent[];
 
 export const beforeChange = (event: BeforeEvent) => {
@@ -81,7 +81,7 @@ const baseGoBack = (data?: Record<string, unknown>) => {
 
 const push = async (url: string) => {
   for (const e of beforeChangeEvent) {
-    url = await Promise.resolve(e(url));
+    url = await Promise.resolve(e(url, urlToPath(url)));
   }
   // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
@@ -94,7 +94,7 @@ const push = async (url: string) => {
 
 const pushNotHistory = async (url: string) => {
   for (const e of beforeChangeEvent) {
-    url = await Promise.resolve(e(url));
+    url = await Promise.resolve(e(url, urlToPath(url)));
   }
   // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
@@ -107,7 +107,7 @@ const pushNotHistory = async (url: string) => {
 
 const replace = async (url: string) => {
   for (const e of beforeChangeEvent) {
-    url = await Promise.resolve(e(url));
+    url = await Promise.resolve(e(url, urlToPath(url)));
   }
   if (historyProxy.stack.length > 0) {
     historyProxy.stack.pop();
@@ -149,6 +149,10 @@ function search() {
   return new URLSearchParams(
     [url1.split("?")[1], url2.split("?")[1]].join("&")
   );
+}
+
+function urlToPath(url: string) {
+  return url.split("?")[0];
 }
 
 function nowUrl() {
@@ -214,6 +218,7 @@ function searchUrlToObject(url: string): Record<string, string> | undefined {
 export const historyProxy = {
   search,
   nowUrl,
+  urlToPath,
   nowFullUrl,
   push,
   pushNotHistory,
