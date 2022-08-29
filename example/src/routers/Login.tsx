@@ -41,7 +41,13 @@ const Login: Component<{ name: string }> = (p) => {
         </div>
         <button
           onclick={() =>
-            routers.Dashboard.push({ name: name(), yourClass: yourClass() })
+            routers.Dashboard.push(
+              { name: name(), yourClass: yourClass() },
+              {
+                animation: sessionStorage.getItem("move") as any,
+                duration: Number(sessionStorage.getItem("duration")) || 0,
+              }
+            )
           }
           class={buttonCss}
         >

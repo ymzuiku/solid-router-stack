@@ -8,7 +8,8 @@ import {
   Suspense,
 } from "solid-js";
 
-import { historyProxy } from "./historyProxy";
+import { historyProxy, Stack } from "./historyProxy";
+import "./setNavigationAnimation";
 import { stackOptions } from "./stackOptions";
 import type {
   Router,
@@ -19,13 +20,12 @@ import type {
 } from "./types";
 export * from "./baseCss";
 export * from "./createPropsSignal";
-export * from "./setNavigationAnimation";
 export { historyProxy };
 
-const classNow = "solid-router-stack-now";
-const classBefore = "solid-router-stack-before";
-const classLeave = "solid-router-stack-leave";
-const classAfter = "solid-router-stack-after";
+const classNow = "solid-router-stack-now-";
+const classBefore = "solid-router-stack-before-";
+const classLeave = "solid-router-stack-leave-";
+const classAfter = "solid-router-stack-after-";
 
 export const createRouters = <T extends Record<string, Router>>(
   p: T
@@ -42,6 +42,8 @@ export const createRouters = <T extends Record<string, Router>>(
         setCss: Setter<string>;
         top: Accessor<boolean>;
         setTop: Setter<boolean>;
+        duration: Accessor<number>;
+        setDuration: Setter<number>;
         params: Accessor<Record<string, string>>;
         setParams: Setter<Record<string, string>>;
       }[]
@@ -59,6 +61,7 @@ export const createRouters = <T extends Record<string, Router>>(
     const [url, setUrl] = createSignal(s.url);
     const [path, setPath] = createSignal(s.path);
     const [css, setCss] = createSignal("");
+    const [duration, setDuration] = createSignal(0);
     const [top, setTop] = createSignal(true);
     const [params, setParams] = createSignal<Record<string, string>>(s.params);
     setStack([
@@ -74,10 +77,13 @@ export const createRouters = <T extends Record<string, Router>>(
         setTop,
         params,
         setParams,
+        duration,
+        setDuration,
       },
     ]);
   };
-  const popStask = () => {
+
+  const popStask = (duration: number) => {
     const s = historyProxy.stack[historyProxy.stack.length - 1];
     const list = stack();
     if (list.length > 1) {
@@ -91,7 +97,7 @@ export const createRouters = <T extends Record<string, Router>>(
     setTimeout(() => {
       list.pop();
       setStack([...list]);
-    }, stackOptions.navigationDuration);
+    }, duration);
   };
   const replaceStask = () => {
     const s = historyProxy.stack[historyProxy.stack.length - 1];
@@ -122,58 +128,78 @@ export const createRouters = <T extends Record<string, Router>>(
       item.setCss(className);
     }
   };
+  const setDurationStyle = (duration: number) => {
+    if (stackOptions.navigationDuration == 0) {
+      return;
+    }
+    const list = stack();
+    const item1 = list[list.length - 1];
+    if (item1) {
+      item1.setDuration(duration);
+    }
+    const item2 = list[list.length - 2];
+    if (item2) {
+      item2.setDuration(duration);
+    }
+  };
 
   let lastLen = 0;
-  let ignoreAnime = false;
-  historyProxy.listen(() => {
+
+  historyProxy.listen((type, stack, popStack) => {
     const nowLen = historyProxy.stack.length;
+    const isBack = popStack && (type === "popstate" || type === "backState");
+    const animation = isBack ? popStack.meta.animation : stack.meta.animation;
+    const duration =
+      ((isBack ? popStack.meta.duration : stack.meta.duration) as number) || 0;
     if (nowLen > lastLen) {
       // push
       pushStask();
-      if (ignoreAnime) {
-        setNowStackClass(classNow);
-        setLastStackClass(classAfter);
+      setDurationStyle(duration);
+      if (!animation || !duration) {
+        setNowStackClass("");
       } else {
-        setNowStackClass(classBefore);
+        setNowStackClass(classBefore + animation);
         requestAnimationFrame(() => {
-          setLastStackClass(classAfter);
-          setNowStackClass(classNow);
+          setLastStackClass(classAfter + animation);
+          setNowStackClass(classNow + animation);
         });
       }
     } else if (lastLen !== nowLen && nowLen >= 1) {
       // pop, 并且不是最后一个
-      setNowStackClass(classLeave);
-      setLastStackClass(classNow);
-      popStask();
-      if (ignoreAnime) {
-        setNowStackClass(classNow);
+      popStask(duration);
+      setDurationStyle(duration);
+      if (!animation || !duration) {
+        setNowStackClass("");
       } else {
+        setNowStackClass(classLeave + animation);
+        setLastStackClass(classNow + animation);
         setTimeout(() => {
-          setNowStackClass(classNow);
-        }, stackOptions.navigationDuration);
+          setNowStackClass(classNow + animation);
+        }, duration);
       }
     } else {
       // pop, 且是最后一个
       replaceStask();
-      setNowStackClass(classNow);
+      setDurationStyle(0);
+      setNowStackClass("");
     }
 
     lastLen = nowLen;
-
-    if (ignoreAnime) {
-      requestAnimationFrame(() => {
-        ignoreAnime = false;
-      });
-    }
   });
 
   let isVirtualHistory = false;
   const goBack = (state?: Record<string, unknown>) => {
+    let stack: Stack | null;
     if (isVirtualHistory) {
-      historyProxy.gobackNotHistory(state);
+      stack = historyProxy.gobackNotHistory(state);
     } else {
-      historyProxy.goBack(state);
+      stack = historyProxy.goBack(state);
     }
+    if (stack && state) {
+      stack.meta.animation = state.animation;
+      stack.meta.durtaion = state.durtaion;
+    }
+    return stack;
   };
 
   const setItem = (item: RouterItem) => {
@@ -182,19 +208,46 @@ export const createRouters = <T extends Record<string, Router>>(
     } else {
       (item as any).Component = lazy(item.render);
     }
-    item.push = (state) => {
+    item.push = async (state, meta) => {
+      let stack: Stack;
       if (isVirtualHistory) {
-        historyProxy.pushNotHistory(historyProxy.parasmUrl(item.path, state));
+        stack = await historyProxy.pushNotHistory(
+          state ? historyProxy.parasmUrl(item.path, state) : item.path,
+          meta
+        );
       } else {
-        historyProxy.push(historyProxy.parasmUrl(item.path, state));
+        stack = await historyProxy.push(
+          state ? historyProxy.parasmUrl(item.path, state) : item.path,
+          meta
+        );
       }
+      if (state) {
+        stack.meta.animation = state.animation;
+        stack.meta.durtaion = state.duration;
+      }
+      return stack;
     };
-    item.replace = (state) => {
-      historyProxy.replace(historyProxy.parasmUrl(item.path, state));
+    item.replace = async (state, meta) => {
+      const stack = await historyProxy.replace(
+        state ? historyProxy.parasmUrl(item.path, state) : item.path,
+        meta
+      );
+      if (state) {
+        stack.meta.animation = state.animation;
+        stack.meta.durtaion = state.duration;
+      }
+      return stack;
     };
-    item.clearTo = (state) => {
-      ignoreAnime = true;
-      historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
+    item.clearTo = async (state, meta) => {
+      const stack = await historyProxy.clearTo(
+        state ? historyProxy.parasmUrl(item.path, state) : item.path,
+        meta
+      );
+      if (state) {
+        stack.meta.animation = state.animation;
+        stack.meta.durtaion = state.duration;
+      }
+      return stack;
     };
   };
   setItem(stackOptions.notFound);
@@ -244,13 +297,13 @@ export const createRouters = <T extends Record<string, Router>>(
 
     const nowUrl = historyProxy.nowUrl();
     const nowParams = historyProxy.searchUrlToObject(historyProxy.nowFullUrl());
-    ignoreAnime = true;
 
     if (nowUrl !== "/" && nowUrl !== root.path) {
       root.push();
       const nowRouter = routerMaps[nowUrl] || stackOptions.notFound;
-      ignoreAnime = true;
-      nowRouter.push({ ...nowParams });
+      nowRouter.push({
+        params: nowParams,
+      });
     } else {
       root.push(nowParams);
     }
@@ -276,6 +329,13 @@ export const createRouters = <T extends Record<string, Router>>(
           const router = routerMaps[item.path()] || stackOptions.notFound;
           preload(router);
           const Component = router.Component;
+          const getDuration = () => {
+            const duration = item.duration();
+            if (duration) {
+              return duration + "ms";
+            }
+            return "none";
+          };
           return (
             <div
               data-path={item.path()}
@@ -288,7 +348,7 @@ export const createRouters = <T extends Record<string, Router>>(
                 left: "0px",
                 width: ignoreFull ? void 0 : getW() + "px",
                 height: ignoreFull ? void 0 : getH() + "px",
-                background: "inherit",
+                "transition-duration": getDuration(),
               }}
             >
               {router.async ? (

@@ -1,8 +1,6 @@
-import { createRouters, setNavigationAnimation } from "solid-router-stack";
+import { createRouters } from "solid-router-stack";
 import { tw } from "twind";
 import Welcome from "./Welcome";
-
-setNavigationAnimation("moveTop");
 
 document.body.className = tw`bg-gray-800`;
 

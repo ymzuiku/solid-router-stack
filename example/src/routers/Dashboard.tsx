@@ -5,7 +5,7 @@ import { routers } from "./routers";
 
 const Dashboard: Component<{ name: string; yourClass: string }> = (p) => {
   return (
-    <div class={tw`text-white h-full w-full`}>
+    <div class={tw`bg-gray-800 text-white h-full w-full`}>
       <button
         onclick={() => routers.goBack()}
         classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
