@@ -42,8 +42,8 @@ export const routers = createRouter({
   },
 });
 
-// page background inherit the parent background:
-document.getElementById("root").style.background = "#fff";
+// Set page background:
+stackOptions.className = "bg-gray-800";
 
 render(
   () => <routers.Routers root={routers.Welcome} hash />,
@@ -142,8 +142,8 @@ const Page: Component = (props) => {
 ```tsx
 import { historyProxy } from "solid-router-stack";
 
-historyProxy.beforeChange((url) => {
-  if (v.indexOf("/user") === 0) {
+historyProxy.beforeChange((url, path) => {
+  if (path === "/user") {
     return "/login";
   }
   return url;

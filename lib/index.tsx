@@ -21,6 +21,7 @@ export * from "./baseCss";
 export * from "./createPropsSignal";
 export * from "./setNavigationAnimation";
 export { historyProxy };
+export { stackOptions };
 
 const classNow = "solid-router-stack-now";
 const classBefore = "solid-router-stack-before";
@@ -279,7 +280,10 @@ export const createRouters = <T extends Record<string, Router>>(
           return (
             <div
               data-path={item.path()}
-              class={item.css()}
+              classList={{
+                [item.css()]: true,
+                [stackOptions.className]: true,
+              }}
               style={{
                 "pointer-events": item.top() ? "auto" : "none",
                 position: "fixed",
@@ -288,7 +292,6 @@ export const createRouters = <T extends Record<string, Router>>(
                 left: "0px",
                 width: ignoreFull ? void 0 : getW() + "px",
                 height: ignoreFull ? void 0 : getH() + "px",
-                background: stackOptions.background,
               }}
             >
               {router.async ? (

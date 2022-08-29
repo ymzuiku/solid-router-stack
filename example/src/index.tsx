@@ -1,11 +1,11 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
-import { tw } from "twind";
 
+import { stackOptions } from "solid-router-stack";
 import "./index.css";
 import { routers } from "./routers/routers";
 
-document.getElementById("root")!.className = tw`w-full h-full bg-gray-800`;
+stackOptions.className = "bg-gray-800";
 
 render(
   () => <routers.Routers root={routers.Welcome} hash />,

@@ -20,7 +20,7 @@ Features:
 
 ```tsx
 import { render } from "solid-js/web";
-import { createRouters } from "solid-router-stack";
+import { createRouters, stackOptions } from "solid-router-stack";
 import Welcome from "./welcome";
 
 export const routers = createRouters({
@@ -39,8 +39,8 @@ export const routers = createRouters({
   },
 });
 
-// page background inherit the parent background:
-document.getElementById("root").style.background = "#fff";
+// Set page background:
+stackOptions.className = "bg-gray-800";
 
 render(
   () => <routers.Routers root={routers.Welcome} hash />,
@@ -132,8 +132,8 @@ When use history change:
 ```tsx
 import { historyProxy } from "solid-router-stack";
 
-historyProxy.beforeChange((url) => {
-  if (v.indexOf("/user") === 0) {
+historyProxy.beforeChange((url, path) => {
+  if (path === "/user") {
     return "/login";
   }
   return url;
