@@ -2,6 +2,7 @@ export interface RouterNavigate {
   push: (state?: Record<string, unknown>) => void;
   replace: (state?: Record<string, unknown>) => void;
   clearTo: (state?: Record<string, unknown>) => void;
+  path: string;
   async?: boolean;
   preload?: string[];
   preloadAll?: boolean;
