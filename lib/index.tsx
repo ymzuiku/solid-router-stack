@@ -233,7 +233,14 @@ export const createRouters = <T extends Record<string, Router>>(
     if (item.async) {
       (item as any).Component = item.render;
     } else {
-      (item as any).Component = lazy(item.render);
+      const LazyComponent = lazy(item.render);
+      (item as any).Component = (p: any) => {
+        return (
+          <Suspense fallback={stackOptions.fallback}>
+            <LazyComponent {...p} />
+          </Suspense>
+        );
+      };
     }
     item.push = (state) => {
       if (isVirtualHistory) {
@@ -345,21 +352,11 @@ export const createRouters = <T extends Record<string, Router>>(
                 height: ignoreFull ? void 0 : getH() + "px",
               }}
             >
-              {router.async ? (
-                <Component
-                  stackTop={item.stackTop()}
-                  stackShow={item.stackShow()}
-                  {...item.params()}
-                />
-              ) : (
-                <Suspense fallback={stackOptions.fallback}>
-                  <Component
-                    stackTop={item.stackTop()}
-                    stackShow={item.stackShow()}
-                    {...item.params()}
-                  />
-                </Suspense>
-              )}
+              <Component
+                stackTop={item.stackTop()}
+                stackShow={item.stackShow()}
+                {...item.params()}
+              />
             </div>
           );
         }}

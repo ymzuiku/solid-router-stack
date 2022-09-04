@@ -6,6 +6,7 @@ export interface RouterNavigate {
   async?: boolean;
   preload?: string[];
   preloadAll?: boolean;
+  Component: (props?: Record<string, unknown> & { sub?: string }) => any;
 }
 
 export interface Router {
