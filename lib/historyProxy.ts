@@ -1,7 +1,12 @@
 // 此文件要保持存粹，仅仅做 history 和 stack 的管理和事件监听
 
 // popstate: 修改url，点击返回
-type State = "popstate" | "pushState" | "replaceState" | "backState";
+type State =
+  | "popstate"
+  | "pushState"
+  | "replaceState"
+  | "backState"
+  | "clearState";
 export interface Stack {
   url: string;
   path: string;
@@ -36,27 +41,29 @@ const newStack = (url: string): Stack => {
 
 let lastUrl = "";
 
-["popstate", "pushState", "replaceState", "backState"].forEach((v) => {
-  window.addEventListener(v, () => {
-    const url = nowUrl();
-    if (v === "popstate") {
-      if (url === lastUrl) {
-        const fullUrl = nowFullUrl();
-        const stack = newStack(fullUrl);
-        const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
-        lastStack.url = stack.url;
-        lastStack.params = stack.params;
-      } else {
-        historyProxy.stack.pop();
+["popstate", "pushState", "replaceState", "backState", "clearState"].forEach(
+  (v) => {
+    window.addEventListener(v, () => {
+      const url = nowUrl();
+      if (v === "popstate") {
+        if (url === lastUrl) {
+          const fullUrl = nowFullUrl();
+          const stack = newStack(fullUrl);
+          const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
+          lastStack.url = stack.url;
+          lastStack.params = stack.params;
+        } else {
+          historyProxy.stack.pop();
+        }
       }
-    }
-    const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
-    events.forEach((e) => {
-      e(lastStack ? lastStack.path : "", v as State, historyProxy.stack);
+      const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
+      events.forEach((e) => {
+        e(lastStack ? lastStack.path : "", v as State, historyProxy.stack);
+      });
+      lastUrl = url;
     });
-    lastUrl = url;
-  });
-});
+  }
+);
 
 const baseGoBack = (data?: Record<string, unknown>) => {
   const len = historyProxy.stack.length;
@@ -141,7 +148,8 @@ const gobackNotHistory = (data?: Record<string, unknown>) => {
 
 const clearTo = (url: string) => {
   historyProxy.stack = [newStack(url)];
-  replace(url);
+  history.replaceState(null, "", url);
+  window.dispatchEvent(new Event("clearState"));
 };
 
 function search() {

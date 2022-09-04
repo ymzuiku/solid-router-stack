@@ -26,12 +26,12 @@ const Dashboard: Component<{ name: string; yourClass: string }> = (p) => {
         >
           {p.yourClass || "No data"}
         </div>
-        {/* <button
+        <button
           onclick={() => routers.Welcome.clearTo()}
           classList={{ [buttonCss]: true, [tw`my-10`]: true }}
         >
           Go back to root
-        </button> */}
+        </button>
       </header>
     </div>
   );

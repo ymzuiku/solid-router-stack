@@ -35,14 +35,16 @@ export const createRouters = <T extends Record<string, Router>>(
   const [stack, setStack] = createRoot(() =>
     createSignal<
       {
+        stackShow: Accessor<boolean>;
+        setStackShow: Setter<boolean>;
         url: Accessor<string>;
         setUrl: Setter<string>;
         path: Accessor<string>;
         setPath: Setter<string>;
         css: Accessor<string>;
         setCss: Setter<string>;
-        top: Accessor<boolean>;
-        setTop: Setter<boolean>;
+        stackTop: Accessor<boolean>;
+        setStackTop: Setter<boolean>;
         params: Accessor<Record<string, string>>;
         setParams: Setter<Record<string, string>>;
       }[]
@@ -53,14 +55,15 @@ export const createRouters = <T extends Record<string, Router>>(
     const list = stack();
     const item = list[list.length - 1];
     if (item) {
-      item.setTop(false);
+      item.setStackTop(false);
     }
 
     const s = historyProxy.stack[historyProxy.stack.length - 1];
     const [url, setUrl] = createSignal(s.url);
     const [path, setPath] = createSignal(s.path);
     const [css, setCss] = createSignal("");
-    const [top, setTop] = createSignal(true);
+    const [stackTop, setStackTop] = createSignal(true);
+    const [stackShow, setStackShow] = createSignal(false);
     const [params, setParams] = createSignal<Record<string, string>>(s.params);
     setStack([
       ...stack(),
@@ -71,10 +74,12 @@ export const createRouters = <T extends Record<string, Router>>(
         setPath,
         css,
         setCss,
-        top,
-        setTop,
+        stackTop,
+        setStackTop,
         params,
         setParams,
+        stackShow,
+        setStackShow,
       },
     ]);
   };
@@ -83,7 +88,7 @@ export const createRouters = <T extends Record<string, Router>>(
     const list = stack();
     if (list.length > 1) {
       const item = list[list.length - 2];
-      item.setTop(true);
+      item.setStackTop(true);
       item.setUrl(s.url);
       item.setPath(s.path);
       item.setParams(s.params);
@@ -101,6 +106,10 @@ export const createRouters = <T extends Record<string, Router>>(
     item.setUrl(s.url);
     item.setParams(s.params);
     setStack([...list]);
+  };
+  const clearStask = () => {
+    setStack([]);
+    pushStask();
   };
 
   const setNowStackClass = (className: string) => {
@@ -123,18 +132,56 @@ export const createRouters = <T extends Record<string, Router>>(
       item.setCss(className);
     }
   };
+  const setNowShow = (isShow: boolean) => {
+    const list = stack();
+    const item = list[list.length - 1];
+    if (item) {
+      item.setStackShow(isShow);
+    }
+  };
+  const setLastShow = (isShow: boolean) => {
+    const list = stack();
+    const item = list[list.length - 2];
+    if (item) {
+      item.setStackShow(isShow);
+    }
+  };
 
   let lastLen = 0;
   let ignoreAnime = false;
-  historyProxy.listen(() => {
+  historyProxy.listen((path, statsType) => {
     const nowLen = historyProxy.stack.length;
-    if (nowLen > lastLen) {
-      // push
-      pushStask();
+    if (statsType === "clearState") {
+      clearStask();
       if (ignoreAnime) {
+        setNowShow(true);
+        setLastShow(false);
         setNowStackClass(classNow);
         setLastStackClass(classAfter);
       } else {
+        setNowShow(true);
+        setTimeout(() => {
+          setLastShow(false);
+        }, stackOptions.navigationDuration);
+        setNowStackClass(classBefore);
+        requestAnimationFrame(() => {
+          setLastStackClass(classAfter);
+          setNowStackClass(classNow);
+        });
+      }
+    } else if (nowLen > lastLen) {
+      // push
+      pushStask();
+      if (ignoreAnime) {
+        setNowShow(true);
+        setLastShow(false);
+        setNowStackClass(classNow);
+        setLastStackClass(classAfter);
+      } else {
+        setNowShow(true);
+        setTimeout(() => {
+          setLastShow(false);
+        }, stackOptions.navigationDuration);
         setNowStackClass(classBefore);
         requestAnimationFrame(() => {
           setLastStackClass(classAfter);
@@ -142,6 +189,9 @@ export const createRouters = <T extends Record<string, Router>>(
         });
       }
     } else if (lastLen !== nowLen && nowLen >= 1) {
+      console.log("__debug__", "222");
+      setNowShow(true);
+      setLastShow(true);
       // pop, 并且不是最后一个
       setNowStackClass(classLeave);
       setLastStackClass(classNow);
@@ -154,6 +204,8 @@ export const createRouters = <T extends Record<string, Router>>(
         }, stackOptions.navigationDuration);
       }
     } else {
+      setNowShow(true);
+      setLastShow(true);
       // pop, 且是最后一个
       replaceStask();
       setNowStackClass(classNow);
@@ -194,7 +246,6 @@ export const createRouters = <T extends Record<string, Router>>(
       historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
     item.clearTo = (state) => {
-      ignoreAnime = true;
       historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
     };
   };
@@ -285,7 +336,7 @@ export const createRouters = <T extends Record<string, Router>>(
                 [stackOptions.className]: true,
               }}
               style={{
-                "pointer-events": item.top() ? "auto" : "none",
+                "pointer-events": item.stackTop() ? "auto" : "none",
                 position: "fixed",
                 "z-index": i() * 10,
                 top: "0px",
@@ -295,10 +346,18 @@ export const createRouters = <T extends Record<string, Router>>(
               }}
             >
               {router.async ? (
-                <Component stackTop={item.top()} {...item.params()} />
+                <Component
+                  stackTop={item.stackTop()}
+                  stackShow={item.stackShow()}
+                  {...item.params()}
+                />
               ) : (
                 <Suspense fallback={stackOptions.fallback}>
-                  <Component stackTop={item.top()} {...item.params()} />
+                  <Component
+                    stackTop={item.stackTop()}
+                    stackShow={item.stackShow()}
+                    {...item.params()}
+                  />
                 </Suspense>
               )}
             </div>

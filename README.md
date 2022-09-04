@@ -104,12 +104,12 @@ function App(props:{dog:string, age: number}) {
 
 ## Not keep page
 
-`props.stackTop` is when stack page is stack top, you can use `<Show when={props.stackTop} />` change Not keep page:
+`props.stackShow` is when stack page is stack top, you can use `<Show when={props.stackShow} />` change Not keep page:
 
 ```tsx
 const Page: Component = (props) => {
   return (
-    <Show when={props.stackTop}>
+    <Show when={props.stackShow}>
       <div>the page</div>
     </Show>
   );

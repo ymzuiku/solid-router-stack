@@ -7,7 +7,11 @@ import Logo from "../logo.svg";
 import { buttonCss } from "./classlist";
 import { routers } from "./routers";
 
-const Welcome: Component<{ name: string; stackTop: boolean }> = (p) => {
+const Welcome: Component<{
+  name: string;
+  stackTop: boolean;
+  stackShow: boolean;
+}> = (p) => {
   p = mergeProps({ name: "" }, p);
   const [getName, setName] = createPropsSignal(p, "name", "");
   const [getMove, setMove] = createSignal("moveTop");
