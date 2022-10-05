@@ -71,7 +71,7 @@ export const createRouters = <T extends Record<string, Router>>(
     };
   };
 
-  const moveStask = () => {
+  const pushSingleStask = () => {
     const list = stack();
     const item = list[list.length - 1];
     if (item) {
@@ -163,13 +163,13 @@ export const createRouters = <T extends Record<string, Router>>(
   let ignoreAnime = false;
   historyProxy.listen((_path, statsType) => {
     const nowLen = historyProxy.stack.length;
-    if (statsType === "moveState") {
+    if (statsType === "pushSingleState") {
       // const list = stack();
       // const last = list.pop()!;
       // const path = last.path();
       // const nextList = list.filter((v) => v.path() !== path);
       // setStack([...nextList, last]);
-      moveStask();
+      pushSingleStask();
       if (ignoreAnime) {
         setNowShow(true);
         setLastShow(false);
@@ -283,9 +283,9 @@ export const createRouters = <T extends Record<string, Router>>(
         isVirtualHistory
       );
     };
-    item.move = (state, tempIgnoreAnime) => {
+    item.pushSingle = (state, tempIgnoreAnime) => {
       ignoreAnime = !!tempIgnoreAnime;
-      historyProxy.move(historyProxy.parasmUrl(item.path, state));
+      historyProxy.pushSingle(historyProxy.parasmUrl(item.path, state));
     };
     item.replace = (state, tempIgnoreAnime) => {
       ignoreAnime = !!tempIgnoreAnime;
@@ -343,15 +343,13 @@ export const createRouters = <T extends Record<string, Router>>(
 
     const nowUrl = historyProxy.nowUrl();
     const nowParams = historyProxy.searchUrlToObject(historyProxy.nowFullUrl());
-    ignoreAnime = true;
 
     if (nowUrl !== "/" && nowUrl !== root.path) {
-      root.push();
+      root.push(void 0, true);
       const nowRouter = routerMaps[nowUrl] || stackOptions.notFound;
-      ignoreAnime = true;
       nowRouter.push({ ...nowParams });
     } else {
-      root.push(nowParams);
+      root.push(nowParams, true);
     }
 
     const [getW, setW] = createSignal(
@@ -369,6 +367,7 @@ export const createRouters = <T extends Record<string, Router>>(
         });
       }
     }
+
     return (
       <For each={stack()}>
         {(item, i) => {

@@ -4,7 +4,7 @@
 type State =
   | "popstate"
   | "pushState"
-  | "moveState"
+  | "pushSingleState"
   | "replaceState"
   | "backState"
   | "clearState";
@@ -46,7 +46,7 @@ const newStack = (url: string): Stack => {
 [
   "popstate",
   "pushState",
-  "moveState",
+  "pushSingleState",
   "replaceState",
   "backState",
   "clearState",
@@ -114,7 +114,7 @@ const push = async (url: string, ignoreHistory?: boolean) => {
 };
 
 // push a page, if have old page, remove old
-const move = async (url: string) => {
+const pushSingle = async (url: string) => {
   for (const e of beforeChangeEvent) {
     url = await Promise.resolve(e(url, urlToPath(url)));
   }
@@ -127,7 +127,7 @@ const move = async (url: string) => {
     url = "/#" + url;
   }
   history.pushState(null, "", url);
-  window.dispatchEvent(new Event("moveState"));
+  window.dispatchEvent(new Event("pushSingleState"));
 };
 
 const replace = async (url: string) => {
@@ -242,7 +242,7 @@ export const historyProxy = {
   urlToPath,
   nowFullUrl,
   push,
-  move,
+  pushSingle,
   replace,
   goBack,
   clearTo,

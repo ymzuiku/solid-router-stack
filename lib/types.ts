@@ -1,6 +1,6 @@
 export interface RouterNavigate {
   push: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
-  move: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  pushSingle: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   replace: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   clearTo: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   path: string;
@@ -22,7 +22,7 @@ export interface RouterItem extends Router, RouterNavigate {
   Component: (props?: any) => any;
   className: string;
   push: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
-  move: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  pushSingle: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   replace: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   clearTo: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
 }

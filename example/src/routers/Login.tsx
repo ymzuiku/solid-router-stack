@@ -84,7 +84,7 @@ const Login: Component<{
             </button>
             <button
               onclick={() =>
-                routers.Welcome.move({
+                routers.Welcome.pushSingle({
                   name: name(),
                   yourClass: yourClass(),
                 })
