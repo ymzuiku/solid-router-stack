@@ -4,6 +4,7 @@
 type State =
   | "popstate"
   | "pushState"
+  | "moveState"
   | "replaceState"
   | "backState"
   | "clearState";
@@ -30,6 +31,9 @@ export const beforeChange = (event: BeforeEvent) => {
 };
 
 const newStack = (url: string): Stack => {
+  if (!url) {
+    url = nowFullUrl();
+  }
   return {
     url,
     path: url.split("?")[0],
@@ -39,31 +43,35 @@ const newStack = (url: string): Stack => {
   };
 };
 
-let lastUrl = "";
-
-["popstate", "pushState", "replaceState", "backState", "clearState"].forEach(
-  (v) => {
-    window.addEventListener(v, () => {
-      const url = nowUrl();
-      if (v === "popstate") {
-        if (url === lastUrl) {
-          const fullUrl = nowFullUrl();
-          const stack = newStack(fullUrl);
-          const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
-          lastStack.url = stack.url;
-          lastStack.params = stack.params;
-        } else {
-          historyProxy.stack.pop();
+[
+  "popstate",
+  "pushState",
+  "moveState",
+  "replaceState",
+  "backState",
+  "clearState",
+].forEach((v) => {
+  window.addEventListener(v, () => {
+    let url = nowUrl();
+    if (v === "popstate") {
+      const oldStack = historyProxy.stack[historyProxy.stack.length - 2];
+      if (!oldStack || url !== oldStack.path) {
+        historyProxy.stack.pop();
+        historyProxy.stack.push(newStack(""));
+      } else {
+        historyProxy.stack.pop();
+        if (historyProxy.stack.length === 0) {
+          const stack = newStack("");
+          historyProxy.stack.push(stack);
         }
       }
-      const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
-      events.forEach((e) => {
-        e(lastStack ? lastStack.path : "", v as State, historyProxy.stack);
-      });
-      lastUrl = url;
+    }
+    const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
+    events.forEach((e) => {
+      e(lastStack ? lastStack.path : "", v as State, historyProxy.stack);
     });
-  }
-);
+  });
+});
 
 const baseGoBack = (data?: Record<string, unknown>) => {
   const len = historyProxy.stack.length;
@@ -71,6 +79,9 @@ const baseGoBack = (data?: Record<string, unknown>) => {
     return "";
   }
   historyProxy.stack.pop();
+  if (!historyProxy.stack.length) {
+    historyProxy.stack.push(newStack(""));
+  }
   let stack = historyProxy.stack[historyProxy.stack.length - 1];
 
   let url = stack.path;
@@ -86,30 +97,37 @@ const baseGoBack = (data?: Record<string, unknown>) => {
   return url;
 };
 
-const push = async (url: string) => {
+const push = async (url: string, ignoreHistory?: boolean) => {
   for (const e of beforeChangeEvent) {
     url = await Promise.resolve(e(url, urlToPath(url)));
   }
-  // historyProxy.stack.forEach((s) => {});
   historyProxy.stack.push(newStack(url));
   if (historyProxy.useHash) {
     url = "/#" + url;
   }
   history.pushState(null, "", url);
-  window.dispatchEvent(new Event("pushState"));
+  if (ignoreHistory) {
+    window.dispatchEvent(new Event("replaceState"));
+  } else {
+    window.dispatchEvent(new Event("pushState"));
+  }
 };
 
-const pushNotHistory = async (url: string) => {
+// push a page, if have old page, remove old
+const move = async (url: string) => {
   for (const e of beforeChangeEvent) {
     url = await Promise.resolve(e(url, urlToPath(url)));
   }
-  // historyProxy.stack.forEach((s) => {});
-  historyProxy.stack.push(newStack(url));
+  const stack = newStack(url);
+  historyProxy.stack = historyProxy.stack.filter((v) => {
+    return v.path !== stack.path;
+  });
+  historyProxy.stack.push(stack);
   if (historyProxy.useHash) {
     url = "/#" + url;
   }
-  history.replaceState(null, "", url);
-  window.dispatchEvent(new Event("replaceState"));
+  history.pushState(null, "", url);
+  window.dispatchEvent(new Event("moveState"));
 };
 
 const replace = async (url: string) => {
@@ -128,22 +146,17 @@ const replace = async (url: string) => {
   window.dispatchEvent(new Event("replaceState"));
 };
 
-const goBack = (data?: Record<string, unknown>) => {
+const goBack = (data?: Record<string, unknown>, ignoreHistory?: boolean) => {
   const url = baseGoBack(data);
   if (url == "") {
     return;
   }
   history.replaceState(null, "", url);
-  window.dispatchEvent(new Event("backState"));
-};
-
-const gobackNotHistory = (data?: Record<string, unknown>) => {
-  const url = baseGoBack(data);
-  if (url == "") {
-    return;
+  if (ignoreHistory) {
+    window.dispatchEvent(new Event("replaceState"));
+  } else {
+    window.dispatchEvent(new Event("backState"));
   }
-  history.replaceState(null, "", url);
-  window.dispatchEvent(new Event("replaceState"));
 };
 
 const clearTo = (url: string) => {
@@ -229,10 +242,9 @@ export const historyProxy = {
   urlToPath,
   nowFullUrl,
   push,
-  pushNotHistory,
+  move,
   replace,
   goBack,
-  gobackNotHistory,
   clearTo,
   listen,
   beforeChange,

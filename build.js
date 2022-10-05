@@ -14,6 +14,7 @@ build({
   external: Object.keys(dep),
   outfile: "cjs/index.js",
   minify: true,
+  sourcemap: true,
   loader: {
     ".svg": "dataurl",
   },
@@ -28,6 +29,7 @@ build({
   external: Object.keys(dep),
   outfile: "esm/index.js",
   minify: true,
+  sourcemap: true,
   loader: {
     ".svg": "dataurl",
   },

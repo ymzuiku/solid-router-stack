@@ -84,23 +84,21 @@ export default Welcome;
 
 When sub page back, you can do something:
 
-
 ```tsx
 import { createPropsSignal } from "solid-router-stack";
 
 // params.dog in props
-function App(props:{dog:string, age: number}) {
-  const [dog, setDog] = createPropsSignal(props, "dog")
+function App(props: { dog: string; age: number }) {
+  const [dog, setDog] = createPropsSignal(props, "dog");
   return (
     <div>
-      <input oninput={e=>setDog(e.currentTarget.value)} />
+      <input oninput={(e) => setDog(e.currentTarget.value)} />
       <div>change and load: {dog()}</div>
       <div>only load: {p.age}</div>
     </div>
   );
 }
 ```
-
 
 ## Not keep page
 
@@ -114,6 +112,15 @@ const Page: Component = (props) => {
     </Show>
   );
 };
+```
+
+## Like desktop router push
+
+`routers.xxxx.move` is push a new page and remove old pages.path equal the new page.
+
+```tsx
+routers.user.move(); // push a new user page to stack top, and remove old user pages
+routers.user.move({}, true); // ignore animation
 ```
 
 ## Animation navigation, like application
@@ -140,7 +147,6 @@ historyProxy.beforeChange((url, path) => {
 });
 ```
 
-
 ## Use virtual history
 
 Use virtual history in iOS Wechat application, history stack only one.
@@ -156,3 +162,4 @@ render(
   document.getElementById("root");
 );
 ```
+

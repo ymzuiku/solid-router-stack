@@ -70,6 +70,30 @@ const Login: Component<{
               Replace Login
             </button>
           </div>
+          <div class={tw`flex flex-row mt-2 space-x-2`}>
+            <button
+              onclick={() =>
+                routers.Welcome.push({
+                  name: name(),
+                  yourClass: yourClass(),
+                })
+              }
+              class={buttonCss}
+            >
+              Push Welcome ageain
+            </button>
+            <button
+              onclick={() =>
+                routers.Welcome.move({
+                  name: name(),
+                  yourClass: yourClass(),
+                })
+              }
+              class={buttonCss}
+            >
+              Move Welcome to top
+            </button>
+          </div>
         </header>
       </div>
     </Show>

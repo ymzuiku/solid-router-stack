@@ -37,8 +37,8 @@ export const createRouters = <T extends Record<string, Router>>(
       {
         stackShow: Accessor<boolean>;
         setStackShow: Setter<boolean>;
-        url: Accessor<string>;
-        setUrl: Setter<string>;
+        // url: Accessor<string>;
+        // setUrl: Setter<string>;
         path: Accessor<string>;
         setPath: Setter<string>;
         css: Accessor<string>;
@@ -52,15 +52,12 @@ export const createRouters = <T extends Record<string, Router>>(
   );
 
   const createStack = (s: Stack) => {
-    const [url, setUrl] = createSignal(s.url);
     const [path, setPath] = createSignal(s.path);
     const [css, setCss] = createSignal("");
     const [stackTop, setStackTop] = createSignal(true);
     const [stackShow, setStackShow] = createSignal(false);
     const [params, setParams] = createSignal<Record<string, string>>(s.params);
     return {
-      url,
-      setUrl,
       path,
       setPath,
       css,
@@ -72,6 +69,18 @@ export const createRouters = <T extends Record<string, Router>>(
       stackShow,
       setStackShow,
     };
+  };
+
+  const moveStask = () => {
+    const list = stack();
+    const item = list[list.length - 1];
+    if (item) {
+      item.setStackTop(false);
+    }
+
+    const s = historyProxy.stack[historyProxy.stack.length - 1];
+    const nextStack = createStack(s);
+    setStack([...stack().filter((v) => v.path() !== s.path), nextStack]);
   };
 
   const pushStask = () => {
@@ -91,7 +100,6 @@ export const createRouters = <T extends Record<string, Router>>(
     if (list.length > 1) {
       const item = list[list.length - 2];
       item.setStackTop(true);
-      item.setUrl(s.url);
       item.setPath(s.path);
       item.setParams(s.params);
       setStack([...list]);
@@ -124,6 +132,7 @@ export const createRouters = <T extends Record<string, Router>>(
       item.setCss(className);
     }
   };
+
   const setLastStackClass = (className: string) => {
     if (stackOptions.navigationDuration == 0) {
       return;
@@ -134,6 +143,7 @@ export const createRouters = <T extends Record<string, Router>>(
       item.setCss(className);
     }
   };
+
   const setNowShow = (isShow: boolean) => {
     const list = stack();
     const item = list[list.length - 1];
@@ -151,9 +161,32 @@ export const createRouters = <T extends Record<string, Router>>(
 
   let lastLen = 0;
   let ignoreAnime = false;
-  historyProxy.listen((path, statsType) => {
+  historyProxy.listen((_path, statsType) => {
     const nowLen = historyProxy.stack.length;
-    if (statsType === "clearState") {
+    if (statsType === "moveState") {
+      // const list = stack();
+      // const last = list.pop()!;
+      // const path = last.path();
+      // const nextList = list.filter((v) => v.path() !== path);
+      // setStack([...nextList, last]);
+      moveStask();
+      if (ignoreAnime) {
+        setNowShow(true);
+        setLastShow(false);
+        setNowStackClass(classNow);
+        setLastStackClass(classAfter);
+      } else {
+        setNowShow(true);
+        setTimeout(() => {
+          setLastShow(false);
+        }, stackOptions.navigationDuration);
+        setNowStackClass(classBefore);
+        requestAnimationFrame(() => {
+          setLastStackClass(classAfter);
+          setNowStackClass(classNow);
+        });
+      }
+    } else if (statsType === "clearState") {
       clearStask();
       if (ignoreAnime) {
         setNowShow(true);
@@ -222,12 +255,12 @@ export const createRouters = <T extends Record<string, Router>>(
   });
 
   let isVirtualHistory = false;
-  const goBack = (state?: Record<string, unknown>) => {
-    if (isVirtualHistory) {
-      historyProxy.gobackNotHistory(state);
-    } else {
-      historyProxy.goBack(state);
-    }
+  const goBack = (
+    state?: Record<string, unknown>,
+    tempIgnoreAnime?: boolean
+  ) => {
+    ignoreAnime = !!tempIgnoreAnime;
+    historyProxy.goBack(state, isVirtualHistory);
   };
 
   const setItem = (item: RouterItem) => {
@@ -243,17 +276,23 @@ export const createRouters = <T extends Record<string, Router>>(
         );
       };
     }
-    item.push = (state) => {
-      if (isVirtualHistory) {
-        historyProxy.pushNotHistory(historyProxy.parasmUrl(item.path, state));
-      } else {
-        historyProxy.push(historyProxy.parasmUrl(item.path, state));
-      }
+    item.push = (state, tempIgnoreAnime) => {
+      ignoreAnime = !!tempIgnoreAnime;
+      historyProxy.push(
+        historyProxy.parasmUrl(item.path, state),
+        isVirtualHistory
+      );
     };
-    item.replace = (state) => {
+    item.move = (state, tempIgnoreAnime) => {
+      ignoreAnime = !!tempIgnoreAnime;
+      historyProxy.move(historyProxy.parasmUrl(item.path, state));
+    };
+    item.replace = (state, tempIgnoreAnime) => {
+      ignoreAnime = !!tempIgnoreAnime;
       historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
-    item.clearTo = (state) => {
+    item.clearTo = (state, tempIgnoreAnime) => {
+      ignoreAnime = !!tempIgnoreAnime;
       historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
     };
   };

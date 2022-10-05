@@ -1,7 +1,8 @@
 export interface RouterNavigate {
-  push: (state?: Record<string, unknown>) => void;
-  replace: (state?: Record<string, unknown>) => void;
-  clearTo: (state?: Record<string, unknown>) => void;
+  push: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  move: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  replace: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  clearTo: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   path: string;
   async?: boolean;
   preload?: string[];
@@ -20,9 +21,10 @@ export interface Router {
 export interface RouterItem extends Router, RouterNavigate {
   Component: (props?: any) => any;
   className: string;
-  push: (state?: Record<string, unknown>) => void;
-  replace: (state?: Record<string, unknown>) => void;
-  clearTo: (state?: Record<string, unknown>) => void;
+  push: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  move: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  replace: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
+  clearTo: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
 }
 
 export type RoutersComonent = (props: {

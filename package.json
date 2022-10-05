@@ -1,6 +1,6 @@
 {
   "name": "solid-router-stack",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "types": "lib/index.tsx",
   "main": "cjs/index.js",
   "private": false,
@@ -27,3 +27,4 @@
     "esbuild-plugin-solid": "^0.4.2"
   }
 }
+
