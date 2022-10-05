@@ -8,7 +8,7 @@ import {
   Suspense,
 } from "solid-js";
 
-import { historyProxy } from "./historyProxy";
+import { historyProxy, Stack } from "./historyProxy";
 import { stackOptions } from "./stackOptions";
 import type {
   Router,
@@ -51,6 +51,29 @@ export const createRouters = <T extends Record<string, Router>>(
     >([])
   );
 
+  const createStack = (s: Stack) => {
+    const [url, setUrl] = createSignal(s.url);
+    const [path, setPath] = createSignal(s.path);
+    const [css, setCss] = createSignal("");
+    const [stackTop, setStackTop] = createSignal(true);
+    const [stackShow, setStackShow] = createSignal(false);
+    const [params, setParams] = createSignal<Record<string, string>>(s.params);
+    return {
+      url,
+      setUrl,
+      path,
+      setPath,
+      css,
+      setCss,
+      stackTop,
+      setStackTop,
+      params,
+      setParams,
+      stackShow,
+      setStackShow,
+    };
+  };
+
   const pushStask = () => {
     const list = stack();
     const item = list[list.length - 1];
@@ -59,29 +82,8 @@ export const createRouters = <T extends Record<string, Router>>(
     }
 
     const s = historyProxy.stack[historyProxy.stack.length - 1];
-    const [url, setUrl] = createSignal(s.url);
-    const [path, setPath] = createSignal(s.path);
-    const [css, setCss] = createSignal("");
-    const [stackTop, setStackTop] = createSignal(true);
-    const [stackShow, setStackShow] = createSignal(false);
-    const [params, setParams] = createSignal<Record<string, string>>(s.params);
-    setStack([
-      ...stack(),
-      {
-        url,
-        setUrl,
-        path,
-        setPath,
-        css,
-        setCss,
-        stackTop,
-        setStackTop,
-        params,
-        setParams,
-        stackShow,
-        setStackShow,
-      },
-    ]);
+    const nextStack = createStack(s);
+    setStack([...stack(), nextStack]);
   };
   const popStask = () => {
     const s = historyProxy.stack[historyProxy.stack.length - 1];
@@ -100,12 +102,12 @@ export const createRouters = <T extends Record<string, Router>>(
     }, stackOptions.navigationDuration);
   };
   const replaceStask = () => {
-    const s = historyProxy.stack[historyProxy.stack.length - 1];
     const list = stack();
-    const item = list[list.length - 1];
-    item.setUrl(s.url);
-    item.setParams(s.params);
-    setStack([...list]);
+    list.pop()!;
+    const s = historyProxy.stack[historyProxy.stack.length - 1];
+    const nextStack = createStack(s);
+    nextStack.setStackShow(true);
+    setStack([...list, nextStack]);
   };
   const clearStask = () => {
     setStack([]);
@@ -189,7 +191,6 @@ export const createRouters = <T extends Record<string, Router>>(
         });
       }
     } else if (lastLen !== nowLen && nowLen >= 1) {
-      console.log("__debug__", "222");
       setNowShow(true);
       setLastShow(true);
       // pop, 并且不是最后一个
@@ -353,6 +354,7 @@ export const createRouters = <T extends Record<string, Router>>(
               }}
             >
               <Component
+                stackLength={stack().length}
                 stackTop={item.stackTop()}
                 stackShow={item.stackShow()}
                 {...item.params()}

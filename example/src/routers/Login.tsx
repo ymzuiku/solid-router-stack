@@ -7,18 +7,24 @@ import { routers } from "./routers";
 
 const item = tw`px-6 my-3 max-w-[400px] w-full`;
 
-const Login: Component<{ name: string; stackShow: boolean }> = (p) => {
+const Login: Component<{
+  stackLength: number;
+  name: string;
+  stackShow: boolean;
+}> = (p) => {
   const [name, setName] = createPropsSignal(p, "name", "");
   const [yourClass, setYourClass] = createSignal("");
   return (
     <Show when={p.stackShow}>
       <div class={tw`bg-gray-800 text-white h-full w-full`}>
-        <button
-          onclick={() => routers.goBack({ name: name() })}
-          classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
-        >
-          Go Back
-        </button>
+        <Show when={p.stackLength > 1}>
+          <button
+            onclick={() => routers.goBack({ name: name() })}
+            classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
+          >
+            Go Back
+          </button>
+        </Show>
         <header
           class={tw`text-white h-full w-full flex flex-col items-center justify-center`}
         >
@@ -40,14 +46,30 @@ const Login: Component<{ name: string; stackShow: boolean }> = (p) => {
               oninput={(e) => setYourClass(e.currentTarget.value)}
             />
           </div>
-          <button
-            onclick={() =>
-              routers.Dashboard.push({ name: name(), yourClass: yourClass() })
-            }
-            class={buttonCss}
-          >
-            Login
-          </button>
+          <div class={tw`flex flex-row space-x-2`}>
+            <button
+              onclick={() =>
+                routers.Dashboard.push({
+                  name: name(),
+                  yourClass: yourClass(),
+                })
+              }
+              class={buttonCss}
+            >
+              Login
+            </button>
+            <button
+              onclick={() =>
+                routers.Dashboard.replace({
+                  name: name(),
+                  yourClass: yourClass(),
+                })
+              }
+              class={buttonCss}
+            >
+              Replace Login
+            </button>
+          </div>
         </header>
       </div>
     </Show>

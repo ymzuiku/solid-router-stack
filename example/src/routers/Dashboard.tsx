@@ -1,17 +1,23 @@
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 import { tw } from "twind";
 import { buttonCss } from "./classlist";
 import { routers } from "./routers";
 
-const Dashboard: Component<{ name: string; yourClass: string }> = (p) => {
+const Dashboard: Component<{
+  stackLength: number;
+  name: string;
+  yourClass: string;
+}> = (p) => {
   return (
     <div class={tw`text-white h-full w-full`}>
-      <button
-        onclick={() => routers.goBack()}
-        classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
-      >
-        Go Back
-      </button>
+      <Show when={p.stackLength > 1}>
+        <button
+          onclick={() => routers.goBack()}
+          classList={{ [tw`top-6 absolute left-6`]: true, [buttonCss]: true }}
+        >
+          Go Back
+        </button>
+      </Show>
       <header
         class={tw`text-white h-full w-full flex flex-col items-center justify-center`}
       >

@@ -49,12 +49,20 @@ const Welcome: Component<{
           value={getName()}
           oninput={(v) => setName(v.currentTarget.value)}
         />
-        <button
-          onclick={() => routers.Login.push({ name: getName() })}
-          class={buttonCss}
-        >
-          Next Page
-        </button>
+        <div class={tw`flex flex-row space-x-2 h-12`}>
+          <button
+            onclick={() => routers.Login.push({ name: getName() })}
+            class={buttonCss}
+          >
+            Next Page
+          </button>
+          <button
+            onclick={() => routers.Login.replace({ name: getName() })}
+            classList={{ [buttonCss]: true, [tw`h-12`]: true }}
+          >
+            Replace Next Page
+          </button>
+        </div>
         <p class={tw`mt-10`}>Scroll view and go back page</p>
         <For each={Array(6).fill(0)}>
           {() => (
@@ -66,12 +74,6 @@ const Welcome: Component<{
             </div>
           )}
         </For>
-        <button
-          onclick={() => routers.Login.push({ name: getName() })}
-          classList={{ [buttonCss]: true, [tw`my-10`]: true }}
-        >
-          Next Page
-        </button>
       </header>
     </div>
   );
