@@ -116,7 +116,7 @@ const Page: Component = (props) => {
 
 ## Like desktop router push
 
-`routers.xxxx.pushSingle` is push a new page and remove old pages.path equal the new page.
+`routers.xxxx.pushSingle` is push a new page and remove old when pages.path equal the new page.
 
 ```tsx
 routers.user.pushSingle(); // push a new user page to stack top, and remove old user pages
@@ -130,6 +130,16 @@ import { setNavigationAnimation } from "solid-router-stack";
 
 // like application
 setNavigationAnimation("moveTop");
+```
+
+ignoreAnimation in once:
+
+```tsx
+// routers.xxx.push(params?:Record<string, unknown>, ignoreAnimation?:boolean)
+routers.user.push({}, true);
+
+// routers.goBack(params?:Record<string, unknown>, ignoreAnimation?:boolean)
+routers.goBack({}, true);
 ```
 
 ## Events listen
@@ -162,4 +172,3 @@ render(
   document.getElementById("root");
 );
 ```
-
