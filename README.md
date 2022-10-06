@@ -116,10 +116,10 @@ const Page: Component = (props) => {
 
 ## Like desktop router push
 
-`routers.xxxx.pushSingle` is push a new page and remove old when pages.path equal the new page.
+`routers.xxxx.pushSingle` is push a new page or move old page to top
 
 ```tsx
-routers.user.pushSingle(); // push a new user page to stack top, and remove old user pages
+routers.user.pushSingle(); // push a new page or move old page to top
 routers.user.pushSingle({}, true); // ignore animation
 ```
 

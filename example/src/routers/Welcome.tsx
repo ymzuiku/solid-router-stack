@@ -49,6 +49,13 @@ const Welcome: Component<{
           value={getName()}
           oninput={(v) => setName(v.currentTarget.value)}
         />
+        <input
+          class={tw`bg-gray-900 my-3 rounded-lg p-2 focus:ring-0 outline-none focus:ring-4 ring-gray-600`}
+          placeholder="Temp text"
+          oninput={(v) => {
+            v.currentTarget.setAttribute("data-value", v.currentTarget.value);
+          }}
+        />
         <div class={tw`flex flex-row space-x-2 h-12`}>
           <button
             onclick={() => routers.Login.push({ name: getName() })}

@@ -78,8 +78,25 @@ export const createRouters = <T extends Record<string, Router>>(
     }
 
     const s = historyProxy.stack[historyProxy.stack.length - 1];
-    const nextStack = createStack(s);
-    setStack([...stack().filter((v) => v.path() !== s.path), nextStack]);
+    let nextStack: typeof list[0] | void;
+    let l = list.length;
+    let n = 0;
+    for (let i = 0; i < l; i++) {
+      const v = list[i - n];
+      if (v.path() === s.path) {
+        nextStack = v;
+        list.splice(i - n, 1);
+        n++;
+      }
+    }
+    if (!nextStack) {
+      nextStack = createStack(s);
+    } else {
+      nextStack.setParams(s.params);
+    }
+    nextStack.setStackTop(true);
+    nextStack.setStackShow(true);
+    setStack([...list, nextStack]);
   };
 
   const pushStask = () => {
