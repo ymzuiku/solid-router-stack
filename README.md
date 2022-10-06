@@ -27,7 +27,7 @@ export const routers = createRouters({
   Welcome: {
     render: Welcome,
     // not use lazy import
-    async: true,
+    sync: true,
   },
   Login: {
     render: () => import("./sign/Login"),

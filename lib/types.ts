@@ -4,7 +4,7 @@ export interface RouterNavigate {
   replace: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   clearTo: (state?: Record<string, unknown>, ignoreAnime?: boolean) => void;
   path: string;
-  async?: boolean;
+  sync?: boolean;
   preload?: string[];
   preloadAll?: boolean;
   Component: (props?: Record<string, unknown> & { sub?: string }) => any;
@@ -13,7 +13,7 @@ export interface RouterNavigate {
 export interface Router {
   path: string;
   render: any;
-  async?: boolean;
+  sync?: boolean;
   preload?: string[];
   preloadAll?: boolean;
 }

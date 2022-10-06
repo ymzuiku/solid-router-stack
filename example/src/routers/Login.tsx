@@ -87,7 +87,7 @@ const Login: Component<{
                 routers.Welcome.pushSingle({
                   name: name(),
                   yourClass: yourClass(),
-                })
+                }, true)
               }
               class={buttonCss}
             >

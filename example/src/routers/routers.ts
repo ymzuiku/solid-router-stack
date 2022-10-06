@@ -1,6 +1,5 @@
 import { createRouters, setNavigationAnimation } from "solid-router-stack";
 import { tw } from "twind";
-import Welcome from "./Welcome";
 
 setNavigationAnimation("moveTop");
 
@@ -10,8 +9,8 @@ export const routers = createRouters({
   Welcome: {
     // render: () => import("./Welcome"),
     path: "/welcome",
-    render: Welcome,
-    async: true,
+    render: () => import("./Welcome"),
+    // async: true,
     preload: ["Login"],
   },
   Login: {

@@ -5,7 +5,6 @@ import {
   For,
   lazy,
   Setter,
-  Suspense,
 } from "solid-js";
 
 import { historyProxy, Stack } from "./historyProxy";
@@ -266,11 +265,7 @@ export const createRouters = <T extends Record<string, Router>>(
     } else {
       const LazyComponent = lazy(item.render);
       (item as any).Component = (p: any) => {
-        return (
-          <Suspense fallback={stackOptions.fallback}>
-            <LazyComponent {...p} />
-          </Suspense>
-        );
+        return <LazyComponent {...p} />;
       };
     }
     item.push = (state, tempIgnoreAnime) => {
@@ -313,7 +308,7 @@ export const createRouters = <T extends Record<string, Router>>(
     const router = routers[k];
     if (router) {
       routerMaps[router.path] = router;
-      if (!router.async) {
+      if (!router.sync) {
         needPreloadAll.push(router);
       }
     }
@@ -322,15 +317,21 @@ export const createRouters = <T extends Record<string, Router>>(
   function preload(router: RouterItem) {
     if (router.preloadAll) {
       needPreloadAll.forEach((r) => {
-        r.render();
+        r.render().then((v: any) => {
+          r.Component = v.default;
+          r.sync = true;
+        });
       });
     } else if (router.preload && router.preload.length) {
       // 200 毫秒后预加载其他页面
       setTimeout(() => {
         router.preload!.forEach((k) => {
           const r = routers[k];
-          if (r && !r.async) {
-            r.render();
+          if (r && !r.sync) {
+            r.render().then((v: any) => {
+              r.Component = v.default;
+              r.sync = true;
+            });
           }
         });
       }, 200);
