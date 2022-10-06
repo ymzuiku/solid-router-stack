@@ -10,7 +10,7 @@ export const routers = createRouters({
     // render: () => import("./Welcome"),
     path: "/welcome",
     render: () => import("./Welcome"),
-    // async: true,
+    // sync: true,
     preload: ["Login"],
   },
   Login: {
