@@ -164,11 +164,6 @@ export const createRouters = <T extends Record<string, Router>>(
   historyProxy.listen((_path, statsType) => {
     const nowLen = historyProxy.stack.length;
     if (statsType === "pushSingleState") {
-      // const list = stack();
-      // const last = list.pop()!;
-      // const path = last.path();
-      // const nextList = list.filter((v) => v.path() !== path);
-      // setStack([...nextList, last]);
       pushSingleStask();
       if (ignoreAnime) {
         setNowShow(true);
@@ -259,7 +254,9 @@ export const createRouters = <T extends Record<string, Router>>(
     state?: Record<string, unknown>,
     tempIgnoreAnime?: boolean
   ) => {
-    ignoreAnime = !!tempIgnoreAnime;
+    if (tempIgnoreAnime) {
+      ignoreAnime = true;
+    }
     historyProxy.goBack(state, isVirtualHistory);
   };
 
@@ -277,22 +274,30 @@ export const createRouters = <T extends Record<string, Router>>(
       };
     }
     item.push = (state, tempIgnoreAnime) => {
-      ignoreAnime = !!tempIgnoreAnime;
+      if (tempIgnoreAnime) {
+        ignoreAnime = true;
+      }
       historyProxy.push(
         historyProxy.parasmUrl(item.path, state),
         isVirtualHistory
       );
     };
     item.pushSingle = (state, tempIgnoreAnime) => {
-      ignoreAnime = !!tempIgnoreAnime;
+      if (tempIgnoreAnime) {
+        ignoreAnime = true;
+      }
       historyProxy.pushSingle(historyProxy.parasmUrl(item.path, state));
     };
     item.replace = (state, tempIgnoreAnime) => {
-      ignoreAnime = !!tempIgnoreAnime;
+      if (tempIgnoreAnime) {
+        ignoreAnime = true;
+      }
       historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
     item.clearTo = (state, tempIgnoreAnime) => {
-      ignoreAnime = !!tempIgnoreAnime;
+      if (tempIgnoreAnime) {
+        ignoreAnime = true;
+      }
       historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
     };
   };
@@ -343,7 +348,7 @@ export const createRouters = <T extends Record<string, Router>>(
 
     const nowUrl = historyProxy.nowUrl();
     const nowParams = historyProxy.searchUrlToObject(historyProxy.nowFullUrl());
-
+    ignoreAnime = true;
     if (nowUrl !== "/" && nowUrl !== root.path) {
       root.push(void 0, true);
       const nowRouter = routerMaps[nowUrl] || stackOptions.notFound;
