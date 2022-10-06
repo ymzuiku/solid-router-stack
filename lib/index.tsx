@@ -277,7 +277,7 @@ export const createRouters = <T extends Record<string, Router>>(
   };
 
   const setItem = (item: RouterItem) => {
-    if (item.async) {
+    if (item.sync) {
       (item as any).Component = item.render;
     } else {
       const LazyComponent = lazy(item.render);
