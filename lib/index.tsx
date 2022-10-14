@@ -27,9 +27,11 @@ const classBefore = "solid-router-stack-before";
 const classLeave = "solid-router-stack-leave";
 const classAfter = "solid-router-stack-after";
 
-let ignoreAnime = false;
-let isVirtualHistory = false;
-let lastLen = 0;
+const cache = {
+  ignoreAnime: false,
+  isVirtualHistory: false,
+  lastLen: 0,
+};
 
 export const createRouters = <T extends Record<string, Router>>(
   p: T
@@ -183,7 +185,7 @@ export const createRouters = <T extends Record<string, Router>>(
     const nowLen = historyProxy.stack.length;
     if (statsType === "pushSingleState") {
       pushSingleStask();
-      if (ignoreAnime) {
+      if (cache.ignoreAnime) {
         setNowShow(true);
         setLastShow(false);
         setNowStackClass(classNow);
@@ -201,7 +203,7 @@ export const createRouters = <T extends Record<string, Router>>(
       }
     } else if (statsType === "clearState") {
       clearStask();
-      if (ignoreAnime) {
+      if (cache.ignoreAnime) {
         setNowShow(true);
         setLastShow(false);
         setNowStackClass(classNow);
@@ -217,10 +219,10 @@ export const createRouters = <T extends Record<string, Router>>(
           setNowStackClass(classNow);
         });
       }
-    } else if (nowLen > lastLen) {
+    } else if (nowLen > cache.lastLen) {
       // push
       pushStask();
-      if (ignoreAnime) {
+      if (cache.ignoreAnime) {
         setNowShow(true);
         setLastShow(false);
         setNowStackClass(classNow);
@@ -236,14 +238,14 @@ export const createRouters = <T extends Record<string, Router>>(
           setNowStackClass(classNow);
         });
       }
-    } else if (lastLen !== nowLen && nowLen >= 1) {
+    } else if (cache.lastLen !== nowLen && nowLen >= 1) {
       setNowShow(true);
       setLastShow(true);
       // pop, 并且不是最后一个
       setNowStackClass(classLeave);
       setLastStackClass(classNow);
       popStask();
-      if (ignoreAnime) {
+      if (cache.ignoreAnime) {
         setNowStackClass(classNow);
       } else {
         setTimeout(() => {
@@ -258,11 +260,11 @@ export const createRouters = <T extends Record<string, Router>>(
       setNowStackClass(classNow);
     }
 
-    lastLen = nowLen;
+    cache.lastLen = nowLen;
 
-    if (ignoreAnime) {
+    if (cache.ignoreAnime) {
       requestAnimationFrame(() => {
-        ignoreAnime = false;
+        cache.ignoreAnime = false;
       });
     }
   });
@@ -272,9 +274,9 @@ export const createRouters = <T extends Record<string, Router>>(
     tempIgnoreAnime?: boolean
   ) => {
     if (tempIgnoreAnime) {
-      ignoreAnime = true;
+      cache.ignoreAnime = true;
     }
-    historyProxy.goBack(state, isVirtualHistory);
+    historyProxy.goBack(state, cache.isVirtualHistory);
   };
 
   const setItem = (item: RouterItem) => {
@@ -288,28 +290,28 @@ export const createRouters = <T extends Record<string, Router>>(
     }
     item.push = (state, ignore) => {
       if (ignore) {
-        ignoreAnime = true;
+        cache.ignoreAnime = true;
       }
       historyProxy.push(
         historyProxy.parasmUrl(item.path, state),
-        isVirtualHistory
+        cache.isVirtualHistory
       );
     };
     item.pushSingle = (state, ignore) => {
       if (ignore) {
-        ignoreAnime = true;
+        cache.ignoreAnime = true;
       }
       historyProxy.pushSingle(historyProxy.parasmUrl(item.path, state));
     };
     item.replace = (state, ignore) => {
       if (ignore) {
-        ignoreAnime = true;
+        cache.ignoreAnime = true;
       }
       historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
     item.clearTo = (state, ignore) => {
       if (ignore) {
-        ignoreAnime = true;
+        cache.ignoreAnime = true;
       }
       historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
     };
@@ -363,11 +365,11 @@ export const createRouters = <T extends Record<string, Router>>(
     virtualHistory,
   }) => {
     historyProxy.useHash = !!hash;
-    isVirtualHistory = !!virtualHistory;
+    cache.isVirtualHistory = !!virtualHistory;
 
     const nowUrl = historyProxy.nowUrl();
     const nowParams = historyProxy.searchUrlToObject(historyProxy.nowFullUrl());
-    ignoreAnime = true;
+    cache.ignoreAnime = true;
     if (nowUrl !== "/" && nowUrl !== root.path) {
       root.push(void 0, true);
       const nowRouter = routerMaps[nowUrl] || stackOptions.notFound;
