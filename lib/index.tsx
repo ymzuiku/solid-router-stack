@@ -27,6 +27,10 @@ const classBefore = "solid-router-stack-before";
 const classLeave = "solid-router-stack-leave";
 const classAfter = "solid-router-stack-after";
 
+let ignoreAnime = false;
+let isVirtualHistory = false;
+let lastLen = 0;
+
 export const createRouters = <T extends Record<string, Router>>(
   p: T
 ): Record<keyof T, RouterNavigate> & Routers => {
@@ -175,8 +179,6 @@ export const createRouters = <T extends Record<string, Router>>(
     }
   };
 
-  let lastLen = 0;
-  let ignoreAnime = false;
   historyProxy.listen((_path, statsType) => {
     const nowLen = historyProxy.stack.length;
     if (statsType === "pushSingleState") {
@@ -265,7 +267,6 @@ export const createRouters = <T extends Record<string, Router>>(
     }
   });
 
-  let isVirtualHistory = false;
   const goBack = (
     state?: Record<string, unknown>,
     tempIgnoreAnime?: boolean
@@ -285,8 +286,8 @@ export const createRouters = <T extends Record<string, Router>>(
         return <LazyComponent {...p} />;
       };
     }
-    item.push = (state, tempIgnoreAnime) => {
-      if (tempIgnoreAnime) {
+    item.push = (state, ignore) => {
+      if (ignore) {
         ignoreAnime = true;
       }
       historyProxy.push(
@@ -294,20 +295,20 @@ export const createRouters = <T extends Record<string, Router>>(
         isVirtualHistory
       );
     };
-    item.pushSingle = (state, tempIgnoreAnime) => {
-      if (tempIgnoreAnime) {
+    item.pushSingle = (state, ignore) => {
+      if (ignore) {
         ignoreAnime = true;
       }
       historyProxy.pushSingle(historyProxy.parasmUrl(item.path, state));
     };
-    item.replace = (state, tempIgnoreAnime) => {
-      if (tempIgnoreAnime) {
+    item.replace = (state, ignore) => {
+      if (ignore) {
         ignoreAnime = true;
       }
       historyProxy.replace(historyProxy.parasmUrl(item.path, state));
     };
-    item.clearTo = (state, tempIgnoreAnime) => {
-      if (tempIgnoreAnime) {
+    item.clearTo = (state, ignore) => {
+      if (ignore) {
         ignoreAnime = true;
       }
       historyProxy.clearTo(historyProxy.parasmUrl(item.path, state));
