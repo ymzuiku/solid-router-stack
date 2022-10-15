@@ -116,11 +116,11 @@ const Page: Component = (props) => {
 
 ## Like desktop router push
 
-`routers.xxxx.pushSingle` is push a new page or move old page to top
+`routers.xxxx.put` is push a new page or move old page to top
 
 ```tsx
-routers.user.pushSingle(); // push a new page or move old page to top
-routers.user.pushSingle({}, true); // ignore animation
+routers.user.put(); // push a new page or move old page to top
+routers.user.put({}, true); // ignore animation
 ```
 
 ## Animation navigation, like application

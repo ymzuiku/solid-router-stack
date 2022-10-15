@@ -297,12 +297,14 @@ export const createRouters = <T extends Record<string, Router>>(
         cache.isVirtualHistory
       );
     };
-    item.pushSingle = (state, ignore) => {
+    item.put = (state, ignore) => {
       if (ignore) {
         cache.ignoreAnime = true;
       }
       historyProxy.pushSingle(historyProxy.parasmUrl(item.path, state));
     };
+    // eslint-disable-next-line
+    item.pushSingle = item.put;
     item.replace = (state, ignore) => {
       if (ignore) {
         cache.ignoreAnime = true;

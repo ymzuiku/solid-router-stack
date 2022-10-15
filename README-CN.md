@@ -125,6 +125,15 @@ const Page: Component = (props) => {
 };
 ```
 
+## 类似传统桌面路由一样切换 menu
+
+`routers.xxxx.put`是一个类似于 push 的 API，区别是如果历史盏中有一个雷同的页面，put 会将旧页面移动到顶部，而 push 会新增一个页面
+
+```tsx
+routers.user.put(); // push a new page or move old page to top
+routers.user.put({}, true); // ignore animation
+```
+
 ## 导航事件监听
 
 添加监听方法, 它会获取 fromUrl 和 toUrl, 您可以通过返回一个新的 URL 来替换原本应该导航的 toUrl
@@ -155,4 +164,3 @@ render(
   document.getElementById("root");
 );
 ```
-
