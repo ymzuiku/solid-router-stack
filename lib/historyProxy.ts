@@ -60,11 +60,12 @@ const newStack = (url: string): Stack => {
         historyProxy.stack.push(newStack(""));
       } else {
         historyProxy.stack.pop();
-        if (historyProxy.stack.length === 0) {
-          const stack = newStack("");
-          historyProxy.stack.push(stack);
-        }
       }
+    }
+
+    if (historyProxy.stack.length === 0) {
+      const stack = newStack("");
+      historyProxy.stack.push(stack);
     }
     const lastStack = historyProxy.stack[historyProxy.stack.length - 1];
     events.forEach((e) => {
